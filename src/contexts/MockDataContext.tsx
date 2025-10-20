@@ -60,6 +60,22 @@ export interface QuoteRequest {
   status: 'novo' | 'em-atendimento' | 'finalizado';
 }
 
+export interface AdminUser {
+  id: number;
+  nome: string;
+  email: string;
+  senha_mock: string;
+  nivel: 'admin' | 'vendedor';
+}
+
+export interface Banner {
+  id: number;
+  imagem_desktop: string;
+  imagem_mobile: string;
+  link_url: string;
+  ordem?: number;
+}
+
 // Mock Categories
 const MOCK_CATEGORIES: Category[] = [
   { id: '1', name: 'Bovinos', slug: 'bovinos', icon: '🥩', image: bovinosImg },
@@ -194,6 +210,42 @@ const MOCK_PRODUCTS: Product[] = [
   },
 ];
 
+// Mock Admin Users
+const MOCK_ADMIN_USERS: AdminUser[] = [
+  {
+    id: 1,
+    nome: 'Admin Master',
+    email: 'admin@realcarnes.com.br',
+    senha_mock: 'admin123',
+    nivel: 'admin',
+  },
+  {
+    id: 2,
+    nome: 'Felipe Vendedor',
+    email: 'vendedor@realcarnes.com.br',
+    senha_mock: 'vendas123',
+    nivel: 'vendedor',
+  },
+];
+
+// Mock Banners
+const MOCK_BANNERS: Banner[] = [
+  {
+    id: 1,
+    imagem_desktop: 'https://placehold.co/1400x450/b02a37/white?text=Banner+Oferta+Picanha',
+    imagem_mobile: 'https://placehold.co/800x600/b02a37/white?text=Banner+Picanha+Mobile',
+    link_url: '/produto/1001',
+    ordem: 1,
+  },
+  {
+    id: 2,
+    imagem_desktop: 'https://placehold.co/1400x450/e0a800/white?text=Banner+Linha+Aves',
+    imagem_mobile: 'https://placehold.co/800x600/e0a800/white?text=Banner+Aves+Mobile',
+    link_url: '/categoria/aves',
+    ordem: 2,
+  },
+];
+
 // Mock Quote Requests (para admin)
 const INITIAL_QUOTES: QuoteRequest[] = [
   {
@@ -263,6 +315,23 @@ interface MockDataContextType {
   getQuoteRequests: (status?: QuoteRequest['status']) => QuoteRequest[];
   getQuoteRequestById: (id: string) => QuoteRequest | undefined;
   updateQuoteStatus: (id: string, status: QuoteRequest['status']) => void;
+  
+  // Admin Users
+  adminUsers: AdminUser[];
+  authenticateAdmin: (email: string, password: string) => AdminUser | null;
+  getAdminUsers: () => AdminUser[];
+  createAdminUser: (user: Omit<AdminUser, 'id'>) => AdminUser;
+  updateAdminUser: (id: number, updates: Partial<AdminUser>) => void;
+  deleteAdminUser: (id: number) => void;
+  
+  // Banners
+  banners: Banner[];
+  getBanners: () => Banner[];
+  getBannerById: (id: number) => Banner | undefined;
+  createBanner: (banner: Omit<Banner, 'id'>) => Banner;
+  updateBanner: (id: number, updates: Partial<Banner>) => void;
+  deleteBanner: (id: number) => void;
+  reorderBanners: (bannerIds: number[]) => void;
 }
 
 const MockDataContext = createContext<MockDataContextType | undefined>(undefined);
@@ -272,6 +341,8 @@ export const MockDataProvider = ({ children }: { children: ReactNode }) => {
   const [categories, setCategories] = useState<Category[]>(MOCK_CATEGORIES);
   const [quoteRequests, setQuoteRequests] = useState<QuoteRequest[]>(INITIAL_QUOTES);
   const [quoteCart, setQuoteCart] = useState<QuoteItem[]>([]);
+  const [adminUsers, setAdminUsers] = useState<AdminUser[]>(MOCK_ADMIN_USERS);
+  const [banners, setBanners] = useState<Banner[]>(MOCK_BANNERS);
 
   // Load cart from localStorage on mount
   useEffect(() => {
@@ -452,6 +523,81 @@ export const MockDataProvider = ({ children }: { children: ReactNode }) => {
     );
   }, []);
 
+  // Admin Users
+  const authenticateAdmin = useCallback((email: string, password: string) => {
+    const user = adminUsers.find(
+      u => u.email === email && u.senha_mock === password
+    );
+    return user || null;
+  }, [adminUsers]);
+
+  const getAdminUsers = useCallback(() => {
+    return adminUsers;
+  }, [adminUsers]);
+
+  const createAdminUser = useCallback((user: Omit<AdminUser, 'id'>) => {
+    const newUser: AdminUser = {
+      ...user,
+      id: Math.max(...adminUsers.map(u => u.id), 0) + 1,
+    };
+    setAdminUsers(prev => [...prev, newUser]);
+    return newUser;
+  }, [adminUsers]);
+
+  const updateAdminUser = useCallback((id: number, updates: Partial<AdminUser>) => {
+    setAdminUsers(prev =>
+      prev.map(user =>
+        user.id === id ? { ...user, ...updates } : user
+      )
+    );
+  }, []);
+
+  const deleteAdminUser = useCallback((id: number) => {
+    setAdminUsers(prev => prev.filter(u => u.id !== id));
+  }, []);
+
+  // Banners
+  const getBanners = useCallback(() => {
+    return [...banners].sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
+  }, [banners]);
+
+  const getBannerById = useCallback((id: number) => {
+    return banners.find(b => b.id === id);
+  }, [banners]);
+
+  const createBanner = useCallback((banner: Omit<Banner, 'id'>) => {
+    const newBanner: Banner = {
+      ...banner,
+      id: Math.max(...banners.map(b => b.id), 0) + 1,
+      ordem: banner.ordem || banners.length + 1,
+    };
+    setBanners(prev => [...prev, newBanner]);
+    return newBanner;
+  }, [banners]);
+
+  const updateBanner = useCallback((id: number, updates: Partial<Banner>) => {
+    setBanners(prev =>
+      prev.map(banner =>
+        banner.id === id ? { ...banner, ...updates } : banner
+      )
+    );
+  }, []);
+
+  const deleteBanner = useCallback((id: number) => {
+    setBanners(prev => prev.filter(b => b.id !== id));
+  }, []);
+
+  const reorderBanners = useCallback((bannerIds: number[]) => {
+    setBanners(prev => {
+      const reordered = bannerIds.map((id, index) => {
+        const banner = prev.find(b => b.id === id);
+        return banner ? { ...banner, ordem: index + 1 } : null;
+      }).filter(Boolean) as Banner[];
+      
+      return reordered;
+    });
+  }, []);
+
   const value = {
     products,
     getProducts,
@@ -480,6 +626,21 @@ export const MockDataProvider = ({ children }: { children: ReactNode }) => {
     getQuoteRequests,
     getQuoteRequestById,
     updateQuoteStatus,
+    
+    adminUsers,
+    authenticateAdmin,
+    getAdminUsers,
+    createAdminUser,
+    updateAdminUser,
+    deleteAdminUser,
+    
+    banners,
+    getBanners,
+    getBannerById,
+    createBanner,
+    updateBanner,
+    deleteBanner,
+    reorderBanners,
   };
 
   return (
