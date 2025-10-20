@@ -1,80 +1,65 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from '@/components/ui/carousel';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { ProductCard } from '@/components/product/ProductCard';
 import { useMockData } from '@/contexts/MockDataContext';
-import heroImage from '@/assets/hero-meat.jpg';
 import premiumMeatCtaImage from '@/assets/banners/premium-meat-cta.jpg';
 import qualityPremiumImg from '@/assets/benefits/quality-premium.jpg';
 import foodSafetyImg from '@/assets/benefits/food-safety.jpg';
 import fastDeliveryImg from '@/assets/benefits/fast-delivery.jpg';
 
 const Home = () => {
-  const { getProducts, categories } = useMockData();
+  const { getProducts, categories, getBanners } = useMockData();
   const featuredProducts = getProducts(undefined, true).slice(0, 6);
+  const banners = getBanners();
 
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
       
       <main className="flex-1">
-        {/* Hero Section */}
-        <section className="relative h-[700px] flex items-center justify-center overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-hero z-10" />
-          <div 
-            className="absolute inset-0 bg-cover bg-center opacity-90"
-            style={{
-              backgroundImage: `url(${heroImage})`,
-            }}
-          />
-          
-          <div className="container relative z-20 px-4 text-center text-white">
-            <div className="max-w-4xl mx-auto space-y-8 animate-fade-in">
-              <h1 className="font-poppins text-5xl md:text-6xl lg:text-7xl font-light leading-tight tracking-tight">
-                Qualidade Premium em
-                <span className="block text-gold font-bold mt-2">Carnes Nobres</span>
-              </h1>
-              <p className="font-poppins text-lg md:text-xl text-white/85 max-w-2xl mx-auto font-light leading-relaxed">
-                Fornecedor especializado para restaurantes, hotéis e distribuidores. 
-                Excelência do campo à sua mesa.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
-                <Button 
-                  size="lg" 
-                  asChild 
-                  variant="outline" 
-                  className="border-2 border-gold text-gold bg-black/30 hover:bg-gold hover:text-gold-foreground backdrop-blur-sm font-poppins font-medium text-base h-14 px-10 transition-all duration-300"
-                >
-                  <Link to="/produtos">
-                    Explorar Catálogo
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Link>
-                </Button>
-                <Button 
-                  size="lg" 
-                  variant="outline" 
-                  asChild 
-                  className="border-2 border-white/80 text-white bg-black/30 hover:bg-white hover:text-foreground backdrop-blur-sm font-poppins font-medium text-base h-14 px-10 transition-all duration-300"
-                >
-                  <Link to="/orcamento">
-                    Solicitar Orçamento
-                  </Link>
-                </Button>
-              </div>
-            </div>
-          </div>
-          
-          {/* Scroll Indicator */}
-          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 animate-bounce">
-            <div className="flex flex-col items-center gap-2 text-white/70">
-              <span className="font-poppins text-xs uppercase tracking-wider">Role para baixo</span>
-              <ArrowRight className="h-5 w-5 rotate-90" />
-            </div>
-          </div>
-        </section>
+        {/* Banner Carousel */}
+        {banners.length > 0 && (
+          <section className="relative">
+            <Carousel className="w-full" opts={{ loop: true }}>
+              <CarouselContent>
+                {banners.map((banner) => (
+                  <CarouselItem key={banner.id}>
+                    <Link to={banner.link_url}>
+                      <div className="relative h-[400px] md:h-[500px] lg:h-[600px] overflow-hidden group">
+                        {/* Desktop Image */}
+                        <img
+                          src={banner.imagem_desktop}
+                          alt={`Banner ${banner.id}`}
+                          className="hidden md:block w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        />
+                        {/* Mobile Image */}
+                        <img
+                          src={banner.imagem_mobile}
+                          alt={`Banner ${banner.id}`}
+                          className="md:hidden w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors duration-300" />
+                      </div>
+                    </Link>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="left-4 h-12 w-12 bg-white/90 hover:bg-white border-none shadow-lg" />
+              <CarouselNext className="right-4 h-12 w-12 bg-white/90 hover:bg-white border-none shadow-lg" />
+            </Carousel>
+          </section>
+        )}
 
         {/* Categories Section */}
         <section className="py-16 bg-muted/30">
@@ -90,7 +75,7 @@ const Home = () => {
             
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
               {categories.map(category => (
-                <Link key={category.id} to={`/produtos?categoria=${category.slug}`}>
+                <Link key={category.id} to={`/categoria/${category.slug}`}>
                   <Card className="overflow-hidden hover:shadow-medium transition-all duration-300 hover:-translate-y-1 group">
                     <CardContent className="p-0">
                       <div className="aspect-square overflow-hidden">

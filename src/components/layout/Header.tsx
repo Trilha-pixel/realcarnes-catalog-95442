@@ -49,7 +49,7 @@ export const Header = () => {
           {categories.slice(0, 4).map(category => (
             <Link
               key={category.id}
-              to={`/produtos?categoria=${category.slug}`}
+              to={`/categoria/${category.slug}`}
               className="text-sm font-medium hover:text-primary transition-colors"
             >
               {category.name}
@@ -139,7 +139,7 @@ export const Header = () => {
                   {categories.map(category => (
                     <Link
                       key={category.id}
-                      to={`/produtos?categoria=${category.slug}`}
+                      to={`/categoria/${category.slug}`}
                       onClick={() => setMobileMenuOpen(false)}
                       className="block py-2 text-base hover:text-primary transition-colors"
                     >

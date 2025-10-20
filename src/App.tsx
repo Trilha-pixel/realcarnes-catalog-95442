@@ -9,6 +9,7 @@ import { AdminAuthProvider } from "./contexts/AdminAuthContext";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Products from "./pages/Products";
+import Category from "./pages/Category";
 import ProductDetail from "./pages/ProductDetail";
 import QuoteList from "./pages/QuoteList";
 import QuoteSuccess from "./pages/QuoteSuccess";
@@ -36,6 +37,7 @@ const App = () => (
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/produtos" element={<Products />} />
+                <Route path="/categoria/:slug" element={<Category />} />
                 <Route path="/produto/:id" element={<ProductDetail />} />
                 <Route path="/orcamento" element={<QuoteList />} />
                 <Route path="/orcamento/sucesso" element={<QuoteSuccess />} />
