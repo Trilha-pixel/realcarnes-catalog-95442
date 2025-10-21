@@ -13,6 +13,12 @@ import Category from "./pages/Category";
 import ProductDetail from "./pages/ProductDetail";
 import QuoteList from "./pages/QuoteList";
 import QuoteSuccess from "./pages/QuoteSuccess";
+import About from "./pages/About";
+import Suppliers from "./pages/Suppliers";
+import ServiceArea from "./pages/ServiceArea";
+import Recipes from "./pages/Recipes";
+import Contact from "./pages/Contact";
+import Blog from "./pages/Blog";
 import AdminLogin from "./pages/admin/AdminLogin";
 import Dashboard from "./pages/admin/Dashboard";
 import ProductManagement from "./pages/admin/ProductManagement";
@@ -36,6 +42,12 @@ const App = () => (
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
+                <Route path="/sobre" element={<About />} />
+                <Route path="/fornecedores" element={<Suppliers />} />
+                <Route path="/area-de-atendimento" element={<ServiceArea />} />
+                <Route path="/receitas" element={<Recipes />} />
+                <Route path="/contato" element={<Contact />} />
+                <Route path="/blog" element={<Blog />} />
                 <Route path="/produtos" element={<Products />} />
                 <Route path="/categoria/:slug" element={<Category />} />
                 <Route path="/produto/:id" element={<ProductDetail />} />
