@@ -1,177 +1,113 @@
-Documento de Requisitos de Produto (PRD): E-commerce Real Carnes (MVP)
-1. Introdução e Visão Geral ... (sem alteração) ...
-2. Público-Alvo ... (sem alteração) ...
-3. Fluxo Principal do Usuário (Cliente) ... (sem alteração) ...
-4. Requisitos Funcionais do MVP (Features)
-4.1. Módulo Público (O que o cliente vê) ... (sem alteração) ...
+# Plano de Implementação do Backend
 
-4.2. Módulo Administrativo (CMS) - Detalhado
-Esta seção detalha todas as funcionalidades da área /admin, que será o Centro de Controle do Site (CMS). O acesso é restrito a usuários internos.
-4.2.1. Autenticação
-Tela de Login (/admin/login): Campos de "E-mail" e "Senha".
-Lógica de Mock: Para o MVP, a autenticação será simulada. O frontend irá aceitar um usuário e senha estáticos (ex: admin@realcarnes.com.br / admin123). Se os dados baterem, o usuário é "logado" e pode ver as telas do admin.
-4.2.2. Dashboard (Página Inicial do Admin)
-Visão geral com estatísticas (widgets) dos dados mock:
-Widget: "Novas Solicitações de Orçamento" (contagem de orçamentos com status "Novo").
-Widget: "Total de Produtos Cadastrados".
-Widget: "Total de Categorias".
-Atalho: "Ver Últimas Solicitações".
-4.2.3. Gerenciamento de Solicitações de Orçamento
-Listagem (Tabela): Exibe todas as solicitações recebidas.
-Colunas: Data, Nome do Cliente, Empresa, Status (Novo, Em Atendimento, Finalizado).
-Ações: Visualizar, Mudar Status.
-Tela de Detalhe: Ao clicar em "Visualizar", o admin vê:
-Dados completos do cliente (Nome, Empresa, CNPJ, E-mail, Telefone).
-Lista de produtos solicitados (Produto, SKU, Quantidade).
-Ação: Mudar o status da solicitação.
-4.2.4. Gerenciamento de Catálogo
-Produtos (CRUD Completo):
-Listagem (Tabela): Imagem, Nome, SKU, Categoria, Status (Ativo/Inativo).
-Formulário (Criar/Editar):
-Campos: Nome, SKU, Descrição (editor de texto rico), Informações de Embalagem (texto simples), Categoria (dropdown selecionado das categorias cadastradas), Status.
-Upload de Mídia: Links URL de imagem ( exemplo: https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQb2Qltwwrje9Xn8bpmcqYvqOoMuAoRwNH-UA&s ) .
-Flag (Checkbox): "Marcar como Destaque" (para aparecer na homepage).
-Categorias (CRUD Simples):
-Listagem (Tabela): Nome.
-Formulário (Criar/Editar): Campo de "Nome da Categoria".
-4.2.5. Gerenciamento de Conteúdo do Site (Personalização)
-Banners da Homepage:
-Interface para gerenciar os banners rotativos.
-Listagem: Imagem (miniatura), Link de destino.
-Formulário (Criar/Editar): Upload de imagem (desktop), Upload de imagem (mobile - opcional), Link de destino.
-Ação: Reordenar os banners (arrastar e soltar).
-Usuários Administradores:
-Interface para gerenciar quem pode acessar o painel /admin.
-Listagem (Tabela): Nome, E-mail, Nível (Admin, Vendedor).
-Formulário (Criar/Editar): Nome, E-mail, Senha, Nível (dropdown).
-4.3. Notificações ... (sem alteração) ...
-5. Requisitos Não Funcionais ... (sem alteração) ...
-6. Design e Identidade Visual ... (sem alteração) ...
+## 1. Introdução e Objetivo
 
-7. ESTRUTURA DO BACKEND FICTÍCIO (MOCK API)
-Esta seção define as estruturas de dados (em formato JSON) que o frontend irá consumir para popular todas as telas, simulando uma API real. Estes dados serão estáticos (armazenados em arquivos .json ou .js dentro do projeto frontend).
-7.1. mock_usuarios_admin.json (Para simular login e gerenciar usuários)
-JSON
-[
-  {
-    "id": 1,
-    "nome": "Admin Master",
-    "email": "admin@realcarnes.com.br",
-    "senha_mock": "admin123",
-    "nivel": "admin"
-  },
-  {
-    "id": 2,
-    "nome": "Felipe Vendedor",
-    "email": "vendedor@realcarnes.com.br",
-    "senha_mock": "vendas123",
-    "nivel": "vendedor"
-  }
-]
+Este documento descreve o plano para a construção e integração de um backend robusto para a aplicação de e-commerce, substituindo a atual camada de dados mockados. O objetivo é criar uma API RESTful que servirá o frontend, gerenciará os dados em um banco de dados PostgreSQL e implementará a lógica de negócio necessária.
 
+## 2. Tecnologias (Stack)
 
-7.2. mock_categorias.json (Para listar no menu e no admin)
-JSON
-[
-  { "id": 101, "nome": "Bovinos", "slug": "bovinos" },
-  { "id": 102, "nome": "Aves", "slug": "aves" },
-  { "id": 103, "nome": "Suínos", "slug": "suinos" },
-  { "id": 104, "nome": "Congelados", "slug": "congelados" }
-]
+Para manter a consistência com o ecossistema JavaScript/TypeScript do frontend, o backend será desenvolvido com:
 
+*   **Ambiente de Execução**: Node.js
+*   **Framework**: Express.js para a criação do servidor e das rotas da API.
+*   **Linguagem**: TypeScript para garantir a tipagem e a escalabilidade do código.
+*   **Banco de Dados**: PostgreSQL, conforme solicitado.
+*   **ORM**: Prisma para a modelagem dos dados, migrações e acesso ao banco de dados.
+*   **Autenticação**: JWT (JSON Web Tokens) para proteger as rotas do painel administrativo.
+*   **Validação de Dados**: Zod (já presente no projeto) para validar os dados de entrada das requisições.
+*   **Gerenciador de Pacotes**: NPM ou Yarn.
 
-7.3. mock_produtos.json (O catálogo principal)
-JSON
-[
-  {
-    "id": 1001,
-    "sku": "RC-P1001",
-    "nome": "Picanha Real Gold (Peça)",
-    "descricao": "O corte mais nobre e desejado. A Picanha Real Gold possui uma capa de gordura uniforme que garante maciez e sabor inigualável para o seu churrasco.",
-    "especificacoes": "Caixa: Aprox. 18 kg | 12 a 15 peças por caixa",
-    "categoria_id": 101,
-    "is_destaque": true,
-    "status": "ativo",
-    "imagens": [
-      "https://placehold.co/800x600/b02a37/white?text=Picanha+1",
-      "https://placehold.co/800x600/b02a37/white?text=Picanha+2"
-    ]
-  },
-  {
-    "id": 1002,
-    "sku": "RC-A1002",
-    "nome": "Peito de Frango (IQF)",
-    "descricao": "Peito de frango em cubos, congelado individualmente (IQF) para facilitar o porcionamento. Perfeito para restaurantes e cozinhas industriais.",
-    "especificacoes": "Caixa: 20 kg | 4 pacotes de 5 kg",
-    "categoria_id": 102,
-    "is_destaque": true,
-    "status": "ativo",
-    "imagens": [
-      "https://placehold.co/800x600/b02a37/white?text=Frango+1"
-    ]
-  },
-  {
-    "id": 1003,
-    "sku": "RC-S1003",
-    "nome": "Costela Suína (Ripa)",
-    "descricao": "Costelinha suína em ripa, ideal para assados e barbecue. Carne macia e de alta qualidade.",
-    "especificacoes": "Caixa: 15 kg | 8 a 10 peças por caixa",
-    "categoria_id": 103,
-    "is_destaque": false,
-    "status": "ativo",
-    "imagens": [
-      "https://placehold.co/800x600/b02a37/white?text=Costela+Suina"
-    ]
-  }
-]
+## 3. Estrutura do Projeto
 
+O código do backend será organizado em um novo diretório `backend/` na raiz do projeto para manter a separação de responsabilidades com o frontend.
 
-7.4. mock_banners_home.json (Para o carrossel da homepage)
-JSON
-[
-  {
-    "id": 1,
-    "imagem_desktop": "https://placehold.co/1400x450/b02a37/white?text=Banner+Oferta+Picanha",
-    "imagem_mobile": "https://placehold.co/800x600/b02a37/white?text=Banner+Picanha+Mobile",
-    "link_url": "/produto/1001"
-  },
-  {
-    "id": 2,
-    "imagem_desktop": "https://placehold.co/1400x450/e0a800/white?text=Banner+Linha+Aves",
-    "imagem_mobile": "https://placehold.co/800x600/e0a800/white?text=Banner+Aves+Mobile",
-    "link_url": "/categoria/aves"
-  }
-]
+```
+/backend
+|-- /prisma
+|   |-- schema.prisma
+|   |-- migrations/
+|-- /src
+|   |-- /config
+|   |-- /controllers
+|   |-- /middlewares
+|   |-- /routes
+|   |-- /services
+|   |-- /utils
+|   |-- server.ts
+|-- .env
+|-- package.json
+|-- tsconfig.json
+```
 
+## 4. Fases de Implementação
 
-7.5. mock_solicitacoes_orcamento.json (Para o painel admin)
-JSON
-[
-  {
-    "id": 9001,
-    "data": "2025-10-20T14:30:00Z",
-    "status": "novo",
-    "cliente_nome": "João Silva",
-    "cliente_empresa": "Restaurante Sabor & Arte",
-    "cliente_cnpj": "12.345.678/0001-99",
-    "cliente_email": "compras@saborearte.com",
-    "cliente_telefone": "11988887777",
-    "itens_solicitados": [
-      { "produto_id": 1001, "produto_nome": "Picanha Real Gold (Peça)", "quantidade": 2 },
-      { "produto_id": 1003, "produto_nome": "Costela Suína (Ripa)", "quantidade": 5 }
-    ]
-  },
-  {
-    "id": 9002,
-    "data": "2025-10-19T10:15:00Z",
-    "status": "em_atendimento",
-    "cliente_nome": "Maria Souza",
-    "cliente_empresa": "Mercado Central",
-    "cliente_cnpj": "98.765.432/0001-11",
-    "cliente_email": "maria.souza@mercadocentral.com",
-    "cliente_telefone": "21977776666",
-    "itens_solicitados": [
-      { "produto_id": 1002, "produto_nome": "Peito de Frango (IQF)", "quantidade": 10 }
-    ]
-  }
-]
+### Fase 1: Configuração do Ambiente e Banco de Dados
+
+1.  **Inicialização do Projeto**:
+    *   Criar o diretório `backend/`.
+    *   Inicializar um novo projeto Node.js com `npm init`.
+    *   Configurar o TypeScript (`tsconfig.json`).
+2.  **Instalação de Dependências**:
+    *   `express`, `cors`, `dotenv`.
+    *   `prisma`, `@prisma/client`, `pg`.
+    *   Dependências de desenvolvimento: `typescript`, `ts-node`, `nodemon`, `@types/*`.
+3.  **Configuração do Prisma**:
+    *   Executar `npx prisma init` para configurar o Prisma e a conexão com o PostgreSQL.
+    *   Definir os modelos de dados no `schema.prisma` com base nas funcionalidades do `docs/plan.md` (Produtos, Categorias, Usuários, Orçamentos, Banners).
+4.  **Migração do Banco de Dados**:
+    *   Executar `npx prisma migrate dev` para criar as tabelas no banco de dados PostgreSQL com base no schema.
+
+### Fase 2: Desenvolvimento da API (Endpoints Públicos)
+
+Criar as rotas, controllers e services para as funcionalidades que não exigem autenticação.
+
+*   **Produtos**:
+    *   `GET /products`: Listar todos os produtos (com filtros e paginação).
+    *   `GET /products/:id`: Obter detalhes de um produto específico.
+*   **Categorias**:
+    *   `GET /categories`: Listar todas as categorias.
+*   **Banners**:
+    *   `GET /banners`: Listar banners da página inicial.
+*   **Orçamentos**:
+    *   `POST /quotes`: Enviar uma nova solicitação de orçamento.
+
+### Fase 3: Desenvolvimento da API (Endpoints Administrativos)
+
+Implementar a lógica de autenticação e os endpoints para o painel de gerenciamento.
+
+1.  **Autenticação**:
+    *   `POST /admin/login`: Endpoint para login de administradores, retornando um token JWT.
+    *   Criar um middleware de autenticação (`authMiddleware`) para verificar o token JWT em rotas protegidas.
+2.  **Endpoints CRUD (Create, Read, Update, Delete)**:
+    *   `GET, POST, PUT, DELETE /admin/products`: Gerenciamento de produtos.
+    *   `GET, POST, PUT, DELETE /admin/categories`: Gerenciamento de categorias.
+    *   `GET, POST, PUT, DELETE /admin/banners`: Gerenciamento de banners.
+    *   `GET, PUT /admin/quotes`: Visualização e atualização de status dos orçamentos.
+    *   `GET, POST, PUT, DELETE /admin/users`: Gerenciamento de usuários administrativos.
+
+### Fase 4: Integração com o Frontend
+
+Modificar a aplicação React para consumir a nova API.
+
+1.  **Configuração do Ambiente**:
+    *   Configurar um proxy no `vite.config.ts` para facilitar as chamadas à API durante o desenvolvimento.
+2.  **Substituição dos Dados Mock**:
+    *   Remover o `MockDataContext` e toda a lógica de dados estáticos.
+3.  **Criação dos Serviços da API**:
+    *   Implementar funções (ou hooks como `useQuery` e `useMutation` do TanStack Query) para realizar as chamadas `fetch` ou `axios` aos endpoints do backend.
+4.  **Atualização dos Componentes**:
+    *   Conectar todas as páginas e componentes (`Home`, `Products`, `ProductDetail`, `Admin`, etc.) para usar os dados vindos da API.
+    *   Implementar o tratamento de estados de carregamento (`loading`) e erro (`error`).
+    *   Integrar o fluxo de login do painel administrativo com o endpoint de autenticação.
+
+### Fase 5: Funcionalidades Adicionais e Finalização
+
+1.  **Envio de E-mails**:
+    *   Integrar uma biblioteca como `Nodemailer` ao serviço de criação de orçamentos para disparar os e-mails de notificação (`[PENDENTE - BACKEND]` no `plan.md`).
+2.  **Validação e Segurança**:
+    *   Aplicar validação com Zod em todas as rotas para garantir a integridade dos dados.
+    *   Revisar as configurações de CORS e outras medidas de segurança básicas.
+3.  **Documentação da API**:
+    *   (Opcional, mas recomendado) Gerar documentação da API usando ferramentas como Swagger ou OpenAPI.
+4.  **Variáveis de Ambiente**:
+    *   Garantir que todas as informações sensíveis (conexão com o banco, segredo do JWT) estejam em variáveis de ambiente (`.env`).
