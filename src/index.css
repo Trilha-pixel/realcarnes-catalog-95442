@@ -121,3 +121,15 @@ All colors MUST be HSL.
     @apply bg-background text-foreground font-poppins;
   }
 }
+
+/* Animações personalizadas */
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
