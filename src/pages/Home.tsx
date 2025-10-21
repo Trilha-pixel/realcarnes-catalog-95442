@@ -13,7 +13,7 @@ import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { ProductCard } from '@/components/product/ProductCard';
 import { useMockData } from '@/contexts/MockDataContext';
-import premiumMeatCtaImage from '@/assets/banners/premium-meat-cta.jpg';
+import heroPicanhaImage from '@/assets/hero-picanha.jpg';
 import qualityPremiumImg from '@/assets/benefits/quality-premium.jpg';
 import foodSafetyImg from '@/assets/benefits/food-safety.jpg';
 import fastDeliveryImg from '@/assets/benefits/fast-delivery.jpg';
@@ -192,7 +192,7 @@ const Home = () => {
           <div 
             className="absolute inset-0 bg-cover bg-center"
             style={{
-              backgroundImage: `url(${premiumMeatCtaImage})`,
+              backgroundImage: `url(${heroPicanhaImage})`,
             }}
           />
           
