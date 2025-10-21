@@ -3,7 +3,7 @@ import { ShoppingCart, Menu, User, LogOut, Phone, MessageCircle, Home, Building2
 import { Button } from '@/components/ui/button';
 import { useMockData } from '@/contexts/MockDataContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import logoRealCarnes from '@/assets/logo-real-carnes.png';
 import {
   DropdownMenu,
@@ -31,14 +31,34 @@ export const Header = () => {
   const { user, isAuthenticated, logout } = useAuth();
   const cartCount = getQuoteCartCount();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
 
   const isActivePath = (path: string) => location.pathname === path;
 
+  // Detectar scroll para adicionar shadow
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 10);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const navLinks = [
+    { to: '/', label: 'Home', icon: Home },
+    { to: '/empresa', label: 'A empresa', icon: Building2 },
+    { to: '/fornecedores', label: 'Fornecedores', icon: Users },
+    { to: '/produtos', label: 'Produtos', icon: Package },
+    { to: '/receitas', label: 'Receitas', icon: ChefHat },
+    { to: '/contato', label: 'Contato', icon: Mail },
+  ];
+
   return (
-    <header className="sticky top-0 z-50 w-full bg-background">
+    <header className={`sticky top-0 z-50 w-full bg-background transition-shadow duration-300 ${scrolled ? 'shadow-lg' : ''}`}>
       {/* Seção Superior - Barra de Utilidades */}
-      <div className="bg-gradient-to-r from-destructive to-destructive/90">
+      <div className="bg-gradient-to-r from-destructive to-destructive/90 transition-all duration-300">
         <div className="container px-4">
           <div className="flex items-center justify-between h-10 text-xs sm:text-sm">
             {/* Mobile: Apenas telefone e WhatsApp */}
@@ -78,7 +98,7 @@ export const Header = () => {
       </div>
 
       {/* Seção Principal - Header Principal */}
-      <div className="border-b bg-background shadow-sm">
+      <div className="border-b bg-background">
         <div className="container px-4">
           <div className="flex items-center justify-between h-16 lg:h-20">
             {/* Coluna Esquerda - Logo */}
@@ -90,68 +110,34 @@ export const Header = () => {
               />
             </Link>
 
-            {/* Coluna Direita - Menu de Navegação Desktop */}
-            <div className="hidden lg:flex items-center gap-4">
-              <NavigationMenu>
-                <NavigationMenuList className="gap-1">
-                  <NavigationMenuItem>
-                    <Link to="/">
-                      <NavigationMenuLink className={`${navigationMenuTriggerStyle()} ${isActivePath('/') ? 'bg-accent text-accent-foreground font-medium' : ''} hover:bg-accent/50 transition-all duration-200`}>
-                        Home
-                      </NavigationMenuLink>
-                    </Link>
-                  </NavigationMenuItem>
-                  <NavigationMenuItem>
-                    <Link to="/empresa">
-                      <NavigationMenuLink className={`${navigationMenuTriggerStyle()} ${isActivePath('/empresa') ? 'bg-accent text-accent-foreground font-medium' : ''} hover:bg-accent/50 transition-all duration-200`}>
-                        A empresa
-                      </NavigationMenuLink>
-                    </Link>
-                  </NavigationMenuItem>
-                  <NavigationMenuItem>
-                    <Link to="/fornecedores">
-                      <NavigationMenuLink className={`${navigationMenuTriggerStyle()} ${isActivePath('/fornecedores') ? 'bg-accent text-accent-foreground font-medium' : ''} hover:bg-accent/50 transition-all duration-200`}>
-                        Fornecedores
-                      </NavigationMenuLink>
-                    </Link>
-                  </NavigationMenuItem>
-                  <NavigationMenuItem>
-                    <Link to="/atendimento">
-                      <NavigationMenuLink className={`${navigationMenuTriggerStyle()} ${isActivePath('/atendimento') ? 'bg-accent text-accent-foreground font-medium' : ''} hover:bg-accent/50 transition-all duration-200`}>
-                        Área de Atendimento
-                      </NavigationMenuLink>
-                    </Link>
-                  </NavigationMenuItem>
-                  <NavigationMenuItem>
-                    <Link to="/produtos">
-                      <NavigationMenuLink className={`${navigationMenuTriggerStyle()} ${isActivePath('/produtos') ? 'bg-accent text-accent-foreground font-medium' : ''} hover:bg-accent/50 transition-all duration-200`}>
-                        Produtos
-                      </NavigationMenuLink>
-                    </Link>
-                  </NavigationMenuItem>
-                  <NavigationMenuItem>
-                    <Link to="/receitas">
-                      <NavigationMenuLink className={`${navigationMenuTriggerStyle()} ${isActivePath('/receitas') ? 'bg-accent text-accent-foreground font-medium' : ''} hover:bg-accent/50 transition-all duration-200`}>
-                        Receitas
-                      </NavigationMenuLink>
-                    </Link>
-                  </NavigationMenuItem>
-                  <NavigationMenuItem>
-                    <Link to="/contato">
-                      <NavigationMenuLink className={`${navigationMenuTriggerStyle()} ${isActivePath('/contato') ? 'bg-accent text-accent-foreground font-medium' : ''} hover:bg-accent/50 transition-all duration-200`}>
-                        Contato
-                      </NavigationMenuLink>
-                    </Link>
-                  </NavigationMenuItem>
-                  <NavigationMenuItem>
-                    <Link to="/blog">
-                      <NavigationMenuLink className={`${navigationMenuTriggerStyle()} ${isActivePath('/blog') ? 'bg-accent text-accent-foreground font-medium' : ''} hover:bg-accent/50 transition-all duration-200`}>
-                        Blog
-                      </NavigationMenuLink>
-                    </Link>
-                  </NavigationMenuItem>
-                </NavigationMenuList>
-              </NavigationMenu>
+            {/* Navegação Desktop - Links Visíveis */}
+            <nav className="hidden lg:flex items-center gap-1">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.to}
+                  to={link.to}
+                  className={`
+                    px-4 py-2 rounded-md text-sm font-medium transition-all duration-200
+                    relative group
+                    ${isActivePath(link.to) 
+                      ? 'text-primary bg-accent' 
+                      : 'text-foreground hover:text-primary hover:bg-accent/50'
+                    }
+                  `}
+                >
+                  {link.label}
+                  {/* Underline animado no hover */}
+                  <span className={`
+                    absolute bottom-0 left-0 w-full h-0.5 bg-primary 
+                    transform origin-left transition-transform duration-300
+                    ${isActivePath(link.to) ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'}
+                  `} />
+                </Link>
+              ))}
+            </nav>
+
+            {/* Actions Desktop */}
+            <div className="hidden lg:flex items-center gap-2">
 
               {/* Carrinho */}
               <Button variant="ghost" size="icon" asChild className="relative hover:bg-accent transition-colors">
@@ -213,18 +199,30 @@ export const Header = () => {
                 </Link>
               </Button>
 
-              {/* Mobile Menu */}
+              {/* Mobile Menu com Overlay */}
               <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
                 <SheetTrigger asChild>
-                  <Button variant="ghost" size="icon">
+                  <Button variant="ghost" size="icon" className="hover:bg-accent transition-colors">
                     <Menu className="h-6 w-6" />
                     <span className="sr-only">Menu</span>
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="right" className="w-[280px] sm:w-[350px] p-0">
-                  <nav className="flex flex-col h-full">
+                
+                {/* Overlay escuro */}
+                {mobileMenuOpen && (
+                  <div 
+                    className="fixed inset-0 bg-black/60 z-40 lg:hidden animate-in fade-in-0 duration-300"
+                    onClick={() => setMobileMenuOpen(false)}
+                  />
+                )}
+                
+                <SheetContent 
+                  side="right" 
+                  className="w-[280px] sm:w-[320px] p-0 z-50 animate-in slide-in-from-right duration-300"
+                >
+                  <nav className="flex flex-col h-full bg-background">
                     {/* Logo no topo do menu mobile */}
-                    <div className="border-b p-4 bg-accent/50">
+                    <div className="border-b p-4 bg-gradient-to-br from-accent/30 to-accent/10">
                       <img 
                         src={logoRealCarnes} 
                         alt="Real Carnes" 
@@ -232,97 +230,94 @@ export const Header = () => {
                       />
                     </div>
 
-                    {/* Links de navegação */}
-                    <div className="flex-1 overflow-y-auto py-4">
+                    {/* Links de navegação com animação stagger */}
+                    <div className="flex-1 overflow-y-auto py-6">
                       <div className="space-y-1 px-3">
-                        <Link
-                          to="/"
-                          onClick={() => setMobileMenuOpen(false)}
-                          className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                            isActivePath('/') ? 'bg-accent text-accent-foreground' : 'hover:bg-accent/50'
-                          }`}
-                        >
-                          <Home className="h-5 w-5" />
-                          Home
-                        </Link>
-                        <Link
-                          to="/empresa"
-                          onClick={() => setMobileMenuOpen(false)}
-                          className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                            isActivePath('/empresa') ? 'bg-accent text-accent-foreground' : 'hover:bg-accent/50'
-                          }`}
-                        >
-                          <Building2 className="h-5 w-5" />
-                          A empresa
-                        </Link>
-                        <Link
-                          to="/fornecedores"
-                          onClick={() => setMobileMenuOpen(false)}
-                          className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                            isActivePath('/fornecedores') ? 'bg-accent text-accent-foreground' : 'hover:bg-accent/50'
-                          }`}
-                        >
-                          <Users className="h-5 w-5" />
-                          Fornecedores
-                        </Link>
+                        {navLinks.map((link, index) => {
+                          const Icon = link.icon;
+                          return (
+                            <Link
+                              key={link.to}
+                              to={link.to}
+                              onClick={() => setMobileMenuOpen(false)}
+                              className={`
+                                flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium 
+                                transition-all duration-200 group
+                                animate-in slide-in-from-right fade-in-0
+                                ${isActivePath(link.to) 
+                                  ? 'bg-primary text-primary-foreground shadow-sm' 
+                                  : 'hover:bg-accent/70 active:scale-95'
+                                }
+                              `}
+                              style={{ animationDelay: `${index * 50}ms` }}
+                            >
+                              <Icon className={`h-5 w-5 transition-transform group-hover:scale-110 ${
+                                isActivePath(link.to) ? 'text-primary-foreground' : 'text-primary'
+                              }`} />
+                              {link.label}
+                              
+                              {/* Indicador de página ativa */}
+                              {isActivePath(link.to) && (
+                                <span className="ml-auto h-2 w-2 rounded-full bg-primary-foreground animate-pulse" />
+                              )}
+                            </Link>
+                          );
+                        })}
+                        
+                        {/* Links extras */}
                         <Link
                           to="/atendimento"
                           onClick={() => setMobileMenuOpen(false)}
-                          className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                            isActivePath('/atendimento') ? 'bg-accent text-accent-foreground' : 'hover:bg-accent/50'
-                          }`}
+                          className={`
+                            flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium 
+                            transition-all duration-200 group
+                            animate-in slide-in-from-right fade-in-0
+                            ${isActivePath('/atendimento') 
+                              ? 'bg-primary text-primary-foreground shadow-sm' 
+                              : 'hover:bg-accent/70 active:scale-95'
+                            }
+                          `}
+                          style={{ animationDelay: '300ms' }}
                         >
-                          <MapPin className="h-5 w-5" />
+                          <MapPin className={`h-5 w-5 transition-transform group-hover:scale-110 ${
+                            isActivePath('/atendimento') ? 'text-primary-foreground' : 'text-primary'
+                          }`} />
                           Área de Atendimento
+                          {isActivePath('/atendimento') && (
+                            <span className="ml-auto h-2 w-2 rounded-full bg-primary-foreground animate-pulse" />
+                          )}
                         </Link>
-                        <Link
-                          to="/produtos"
-                          onClick={() => setMobileMenuOpen(false)}
-                          className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                            isActivePath('/produtos') ? 'bg-accent text-accent-foreground' : 'hover:bg-accent/50'
-                          }`}
-                        >
-                          <Package className="h-5 w-5" />
-                          Produtos
-                        </Link>
-                        <Link
-                          to="/receitas"
-                          onClick={() => setMobileMenuOpen(false)}
-                          className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                            isActivePath('/receitas') ? 'bg-accent text-accent-foreground' : 'hover:bg-accent/50'
-                          }`}
-                        >
-                          <ChefHat className="h-5 w-5" />
-                          Receitas
-                        </Link>
-                        <Link
-                          to="/contato"
-                          onClick={() => setMobileMenuOpen(false)}
-                          className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                            isActivePath('/contato') ? 'bg-accent text-accent-foreground' : 'hover:bg-accent/50'
-                          }`}
-                        >
-                          <Mail className="h-5 w-5" />
-                          Contato
-                        </Link>
+                        
                         <Link
                           to="/blog"
                           onClick={() => setMobileMenuOpen(false)}
-                          className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                            isActivePath('/blog') ? 'bg-accent text-accent-foreground' : 'hover:bg-accent/50'
-                          }`}
+                          className={`
+                            flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium 
+                            transition-all duration-200 group
+                            animate-in slide-in-from-right fade-in-0
+                            ${isActivePath('/blog') 
+                              ? 'bg-primary text-primary-foreground shadow-sm' 
+                              : 'hover:bg-accent/70 active:scale-95'
+                            }
+                          `}
+                          style={{ animationDelay: '350ms' }}
                         >
-                          <Newspaper className="h-5 w-5" />
+                          <Newspaper className={`h-5 w-5 transition-transform group-hover:scale-110 ${
+                            isActivePath('/blog') ? 'text-primary-foreground' : 'text-primary'
+                          }`} />
                           Blog
+                          {isActivePath('/blog') && (
+                            <span className="ml-auto h-2 w-2 rounded-full bg-primary-foreground animate-pulse" />
+                          )}
                         </Link>
                       </div>
                     </div>
                     
-                    {/* User Actions no rodapé */}
-                    <div className="border-t p-4 bg-accent/30">
+                    {/* User Actions no rodapé com animação */}
+                    <div className="border-t p-4 bg-gradient-to-br from-accent/30 to-accent/10 animate-in fade-in-0 slide-in-from-bottom duration-500">
                       {isAuthenticated ? (
                         <div className="space-y-3">
-                          <div className="px-2 py-1.5 bg-background/50 rounded-lg">
+                          <div className="px-3 py-2.5 bg-background/80 backdrop-blur-sm rounded-lg shadow-sm border">
                             <p className="text-sm font-medium truncate">{user?.name}</p>
                             <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
                           </div>
@@ -332,7 +327,7 @@ export const Header = () => {
                               logout();
                               setMobileMenuOpen(false);
                             }}
-                            className="w-full justify-start"
+                            className="w-full justify-start hover:bg-destructive/10 hover:text-destructive hover:border-destructive transition-colors"
                             size="sm"
                           >
                             <LogOut className="mr-2 h-4 w-4" />
@@ -343,7 +338,7 @@ export const Header = () => {
                         <Button 
                           variant="default" 
                           asChild 
-                          className="w-full shadow-sm"
+                          className="w-full shadow-sm hover:shadow-md transition-all active:scale-95"
                         >
                           <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
                             <User className="mr-2 h-4 w-4" />
