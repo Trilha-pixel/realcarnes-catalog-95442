@@ -100,7 +100,7 @@ export const Header = () => {
                 <img 
                   src={logoRealCarnes} 
                   alt="Real Carnes" 
-                  className="h-16 w-auto object-contain"
+                  className="h-20 w-auto object-contain"
                 />
               </Link>
 
@@ -204,7 +204,7 @@ export const Header = () => {
               <img 
                 src={logoRealCarnes} 
                 alt="Real Carnes" 
-                className="h-12 w-auto object-contain"
+                className="h-14 w-auto object-contain"
               />
             </Link>
 
@@ -264,7 +264,7 @@ export const Header = () => {
                 <img 
                   src={logoRealCarnes} 
                   alt="Real Carnes" 
-                  className="h-12 w-auto object-contain"
+                  className="h-14 w-auto object-contain"
                 />
                 <Button
                   variant="ghost"
