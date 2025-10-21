@@ -17,15 +17,15 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 10%;
 
-    /* Real Carnes Red - Primary Brand Color */
-    --primary: 348 70% 45%;
+    /* Real Carnes Red - Primary Brand Color from Logo */
+    --primary: 358 73% 47%;
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 348 70% 38%;
+    --primary-hover: 358 73% 40%;
 
-    /* Gold Accent - Premium Touch - More sophisticated burnt gold */
-    --gold: 38 75% 58%;
+    /* Gold Accent - Premium Touch from Crown */
+    --gold: 39 67% 56%;
     --gold-foreground: 0 0% 10%;
-    --gold-hover: 38 75% 52%;
+    --gold-hover: 39 67% 50%;
 
     --secondary: 0 0% 96%;
     --secondary-foreground: 0 0% 10%;
@@ -33,38 +33,38 @@ All colors MUST be HSL.
     --muted: 0 0% 96%;
     --muted-foreground: 0 0% 45%;
 
-    --accent: 348 70% 45%;
+    --accent: 358 73% 47%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84% 60%;
+    --destructive: 358 73% 47%;
     --destructive-foreground: 0 0% 100%;
 
     --border: 0 0% 90%;
     --input: 0 0% 90%;
-    --ring: 348 70% 45%;
+    --ring: 358 73% 47%;
 
     --radius: 0.75rem;
 
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(348 70% 45%), hsl(348 70% 35%));
-    --gradient-gold: linear-gradient(135deg, hsl(45 85% 55%), hsl(45 85% 45%));
-    --gradient-hero: linear-gradient(135deg, hsl(0 0% 0% / 0.4), hsl(348 70% 20% / 0.3));
-    --gradient-cta: linear-gradient(135deg, hsl(345 50% 22%), hsl(345 45% 18%));
+    --gradient-primary: linear-gradient(135deg, hsl(358 73% 47%), hsl(358 73% 37%));
+    --gradient-gold: linear-gradient(135deg, hsl(39 67% 56%), hsl(53 93% 77%));
+    --gradient-hero: linear-gradient(135deg, hsl(0 0% 0% / 0.4), hsl(358 73% 20% / 0.3));
+    --gradient-cta: linear-gradient(135deg, hsl(358 73% 47%), hsl(358 73% 40%));
 
     /* Shadows */
     --shadow-soft: 0 2px 8px hsl(0 0% 0% / 0.08);
     --shadow-medium: 0 4px 16px hsl(0 0% 0% / 0.12);
     --shadow-strong: 0 8px 32px hsl(0 0% 0% / 0.16);
-    --shadow-gold: 0 4px 16px hsl(45 85% 55% / 0.25);
+    --shadow-gold: 0 4px 16px hsl(39 67% 56% / 0.3);
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 0 0% 20%;
-    --sidebar-primary: 348 70% 45%;
+    --sidebar-primary: 358 73% 47%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 0 0% 95%;
     --sidebar-accent-foreground: 0 0% 10%;
     --sidebar-border: 0 0% 90%;
-    --sidebar-ring: 348 70% 45%;
+    --sidebar-ring: 358 73% 47%;
   }
 
   .dark {
@@ -77,13 +77,13 @@ All colors MUST be HSL.
     --popover: 0 0% 12%;
     --popover-foreground: 0 0% 95%;
 
-    --primary: 348 70% 50%;
+    --primary: 358 73% 52%;
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 348 70% 45%;
+    --primary-hover: 358 73% 47%;
 
-    --gold: 38 75% 65%;
+    --gold: 39 67% 65%;
     --gold-foreground: 0 0% 10%;
-    --gold-hover: 38 75% 60%;
+    --gold-hover: 39 67% 60%;
 
     --secondary: 0 0% 15%;
     --secondary-foreground: 0 0% 95%;
@@ -91,24 +91,24 @@ All colors MUST be HSL.
     --muted: 0 0% 15%;
     --muted-foreground: 0 0% 65%;
 
-    --accent: 348 70% 50%;
+    --accent: 358 73% 52%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 62% 40%;
+    --destructive: 358 73% 45%;
     --destructive-foreground: 0 0% 100%;
 
     --border: 0 0% 20%;
     --input: 0 0% 20%;
-    --ring: 348 70% 50%;
+    --ring: 358 73% 52%;
 
     --sidebar-background: 0 0% 10%;
     --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 348 70% 50%;
+    --sidebar-primary: 358 73% 52%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 0 0% 15%;
     --sidebar-accent-foreground: 0 0% 95%;
     --sidebar-border: 0 0% 20%;
-    --sidebar-ring: 348 70% 50%;
+    --sidebar-ring: 358 73% 52%;
   }
 }
 

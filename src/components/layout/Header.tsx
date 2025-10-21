@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useMockData } from '@/contexts/MockDataContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useState } from 'react';
+import logoRealCarnes from '@/assets/logo-real-carnes.png';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -69,14 +70,12 @@ export const Header = () => {
         <div className="container px-4">
           <div className="flex items-center justify-between h-20">
             {/* Coluna Esquerda - Logo */}
-            <Link to="/" className="flex items-center space-x-2">
-              <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-gradient-primary">
-                <span className="text-2xl font-bold text-primary-foreground">RC</span>
-              </div>
-              <div className="hidden sm:block">
-                <span className="text-xl font-bold text-primary">Real Carnes</span>
-                <p className="text-xs text-muted-foreground">Qualidade Premium</p>
-              </div>
+            <Link to="/" className="flex items-center space-x-3">
+              <img 
+                src={logoRealCarnes} 
+                alt="Real Carnes - Você conhece, você confia!" 
+                className="h-16 w-auto object-contain"
+              />
             </Link>
 
             {/* Coluna Direita - Menu de Navegação Desktop */}
