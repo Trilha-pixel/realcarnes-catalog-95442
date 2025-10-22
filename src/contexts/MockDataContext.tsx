@@ -22,6 +22,10 @@ import congeladosImg from '@/assets/categories/congelados.jpg';
 import resfriadosImg from '@/assets/categories/resfriados.jpg';
 import especialImg from '@/assets/categories/especiais.jpg';
 
+// Import banner images
+import bannerOfertaCarne from '@/assets/banner-oferta-carne.png';
+import bannerOfertaSemana from '@/assets/banner-oferta-semana.png';
+
 export interface Product {
   id: string;
   name: string;
@@ -232,16 +236,16 @@ const MOCK_ADMIN_USERS: AdminUser[] = [
 const MOCK_BANNERS: Banner[] = [
   {
     id: 1,
-    imagem_desktop: 'https://placehold.co/1400x450/b02a37/white?text=Banner+Oferta+Picanha',
-    imagem_mobile: 'https://placehold.co/800x600/b02a37/white?text=Banner+Picanha+Mobile',
-    link_url: '/produto/1001',
+    imagem_desktop: bannerOfertaCarne,
+    imagem_mobile: bannerOfertaCarne,
+    link_url: '/produtos',
     ordem: 1,
   },
   {
     id: 2,
-    imagem_desktop: 'https://placehold.co/1400x450/e0a800/white?text=Banner+Linha+Aves',
-    imagem_mobile: 'https://placehold.co/800x600/e0a800/white?text=Banner+Aves+Mobile',
-    link_url: '/categoria/aves',
+    imagem_desktop: bannerOfertaSemana,
+    imagem_mobile: bannerOfertaSemana,
+    link_url: '/produtos',
     ordem: 2,
   },
 ];
