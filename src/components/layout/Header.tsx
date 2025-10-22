@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useMockData } from '@/contexts/MockDataContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useState, useEffect } from 'react';
-import logoRoyalAlimentos from '@/assets/royal-alimentos-logo.png';
+import logoRoyalAlimentos from '@/assets/royal-logo-transparent.png';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -91,8 +91,8 @@ export const Header = () => {
           </div>
         </div>
 
-        {/* Barra Principal - Branca com Logo, Navegação e Ações */}
-        <div className="bg-background border-b">
+        {/* Barra Principal - Cinza com Logo, Navegação e Ações */}
+        <div className="bg-muted/50 border-b">
           <div className="container px-4">
             <div className="flex items-center justify-between h-20">
               {/* Logo */}
