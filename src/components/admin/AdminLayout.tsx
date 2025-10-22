@@ -53,8 +53,8 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
       {/* Sidebar */}
       <aside className="w-64 border-r bg-card flex flex-col">
         <div className="p-6">
-          <h1 className="text-2xl font-bold text-primary">Real Carnes</h1>
-          <p className="text-sm text-muted-foreground mt-1">Painel Admin</p>
+          <h1 className="text-2xl font-bold text-primary">Royal Alimentos</h1>
+          <p className="text-sm text-accent font-semibold mt-1">Painel Admin</p>
         </div>
         
         <Separator />
