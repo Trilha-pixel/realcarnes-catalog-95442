@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useMockData } from '@/contexts/MockDataContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useState, useEffect } from 'react';
-import logoRealCarnes from '@/assets/logo-real-carnes.png';
+import logoRoyalAlimentos from '@/assets/royal-alimentos-logo.png';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -98,8 +98,8 @@ export const Header = () => {
               {/* Logo */}
               <Link to="/" className="flex items-center hover:opacity-80 transition-opacity">
                 <img 
-                  src={logoRealCarnes} 
-                  alt="Real Carnes" 
+                  src={logoRoyalAlimentos} 
+                  alt="Royal Alimentos" 
                   className="h-20 w-auto object-contain"
                 />
               </Link>
@@ -202,8 +202,8 @@ export const Header = () => {
             {/* Logo Mobile */}
             <Link to="/" className="flex items-center hover:opacity-80 transition-opacity">
               <img 
-                src={logoRealCarnes} 
-                alt="Real Carnes" 
+                src={logoRoyalAlimentos} 
+                alt="Royal Alimentos" 
                 className="h-14 w-auto object-contain"
               />
             </Link>
@@ -262,8 +262,8 @@ export const Header = () => {
               {/* Header do Menu com Logo e Botão Fechar */}
               <div className="flex items-center justify-between p-4 border-b bg-gradient-to-br from-accent/40 to-accent/10">
                 <img 
-                  src={logoRealCarnes} 
-                  alt="Real Carnes" 
+                  src={logoRoyalAlimentos} 
+                  alt="Royal Alimentos" 
                   className="h-14 w-auto object-contain"
                 />
                 <Button
