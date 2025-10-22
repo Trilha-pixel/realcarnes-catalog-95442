@@ -9,16 +9,16 @@ export const Footer = () => {
           {/* Brand */}
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
-              <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-primary">
-                <span className="text-2xl font-bold text-primary-foreground">RC</span>
+              <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-primary">
+                <span className="text-2xl font-bold text-primary-foreground">RA</span>
               </div>
               <div>
-                <span className="text-lg font-bold text-primary">Real Carnes</span>
-                <p className="text-xs text-muted-foreground">Qualidade Premium</p>
+                <span className="text-lg font-bold text-primary">Royal Alimentos</span>
+                <p className="text-xs text-accent font-semibold">Excelência em Distribuição</p>
               </div>
             </div>
             <p className="text-sm text-muted-foreground">
-              Fornecedor especializado em carnes premium para o mercado B2B.
+              Distribuidora especializada em alimentos congelados e refrigerados de alta qualidade.
             </p>
           </div>
 
@@ -99,7 +99,7 @@ export const Footer = () => {
         </div>
 
         <div className="border-t mt-8 pt-8 text-center text-sm text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} Real Carnes. Todos os direitos reservados.</p>
+          <p>&copy; {new Date().getFullYear()} Royal Alimentos. Todos os direitos reservados.</p>
         </div>
       </div>
     </footer>
