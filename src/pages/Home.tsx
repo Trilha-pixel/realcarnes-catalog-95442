@@ -130,7 +130,7 @@ const Home = () => {
           <div className="container px-4">
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Por que escolher a <span className="text-primary">Real Carnes</span>?
+                Por que escolher a <span className="text-accent">Royal Alimentos</span>?
               </h2>
             </div>
             
