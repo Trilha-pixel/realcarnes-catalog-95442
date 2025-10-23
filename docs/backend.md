@@ -1,177 +1,85 @@
-Documento de Requisitos de Produto (PRD): E-commerce Real Carnes (MVP) BACKEND < -
-1. Introdução e Visão Geral ... (sem alteração) ...
-2. Público-Alvo ... (sem alteração) ...
-3. Fluxo Principal do Usuário (Cliente) ... (sem alteração) ...
-4. Requisitos Funcionais do MVP (Features)
-4.1. Módulo Público (O que o cliente vê) ... (sem alteração) ...
+# Plano de Implementação do Backend
 
-4.2. Módulo Administrativo (CMS) - Detalhado
-Esta seção detalha todas as funcionalidades da área /admin, que será o Centro de Controle do Site (CMS). O acesso é restrito a usuários internos.
-4.2.1. Autenticação
-Tela de Login (/admin/login): Campos de "E-mail" e "Senha".
-Lógica de Mock: Para o MVP, a autenticação será simulada. O frontend irá aceitar um usuário e senha estáticos (ex: admin@realcarnes.com.br / admin123). Se os dados baterem, o usuário é "logado" e pode ver as telas do admin.
-4.2.2. Dashboard (Página Inicial do Admin)
-Visão geral com estatísticas (widgets) dos dados mock:
-Widget: "Novas Solicitações de Orçamento" (contagem de orçamentos com status "Novo").
-Widget: "Total de Produtos Cadastrados".
-Widget: "Total de Categorias".
-Atalho: "Ver Últimas Solicitações".
-4.2.3. Gerenciamento de Solicitações de Orçamento
-Listagem (Tabela): Exibe todas as solicitações recebidas.
-Colunas: Data, Nome do Cliente, Empresa, Status (Novo, Em Atendimento, Finalizado).
-Ações: Visualizar, Mudar Status.
-Tela de Detalhe: Ao clicar em "Visualizar", o admin vê:
-Dados completos do cliente (Nome, Empresa, CNPJ, E-mail, Telefone).
-Lista de produtos solicitados (Produto, SKU, Quantidade).
-Ação: Mudar o status da solicitação.
-4.2.4. Gerenciamento de Catálogo
-Produtos (CRUD Completo):
-Listagem (Tabela): Imagem, Nome, SKU, Categoria, Status (Ativo/Inativo).
-Formulário (Criar/Editar):
-Campos: Nome, SKU, Descrição (editor de texto rico), Informações de Embalagem (texto simples), Categoria (dropdown selecionado das categorias cadastradas), Status.
-Upload de Mídia: Links URL de imagem ( exemplo: https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQb2Qltwwrje9Xn8bpmcqYvqOoMuAoRwNH-UA&s ) .
-Flag (Checkbox): "Marcar como Destaque" (para aparecer na homepage).
-Categorias (CRUD Simples):
-Listagem (Tabela): Nome.
-Formulário (Criar/Editar): Campo de "Nome da Categoria".
-4.2.5. Gerenciamento de Conteúdo do Site (Personalização)
-Banners da Homepage:
-Interface para gerenciar os banners rotativos.
-Listagem: Imagem (miniatura), Link de destino.
-Formulário (Criar/Editar): Upload de imagem (desktop), Upload de imagem (mobile - opcional), Link de destino.
-Ação: Reordenar os banners (arrastar e soltar).
-Usuários Administradores:
-Interface para gerenciar quem pode acessar o painel /admin.
-Listagem (Tabela): Nome, E-mail, Nível (Admin, Vendedor).
-Formulário (Criar/Editar): Nome, E-mail, Senha, Nível (dropdown).
-4.3. Notificações ... (sem alteração) ...
-5. Requisitos Não Funcionais ... (sem alteração) ...
-6. Design e Identidade Visual ... (sem alteração) ...
+Este documento descreve o plano para criar o backend da aplicação de e-commerce, substituindo os dados mock por uma API real com um banco de dados PostgreSQL.
 
-7. ESTRUTURA DO BACKEND FICTÍCIO (MOCK API)
-Esta seção define as estruturas de dados (em formato JSON) que o frontend irá consumir para popular todas as telas, simulando uma API real. Estes dados serão estáticos (armazenados em arquivos .json ou .js dentro do projeto frontend).
-7.1. mock_usuarios_admin.json (Para simular login e gerenciar usuários)
-JSON
-[
-  {
-    "id": 1,
-    "nome": "Admin Master",
-    "email": "admin@realcarnes.com.br",
-    "senha_mock": "admin123",
-    "nivel": "admin"
-  },
-  {
-    "id": 2,
-    "nome": "Felipe Vendedor",
-    "email": "vendedor@realcarnes.com.br",
-    "senha_mock": "vendas123",
-    "nivel": "vendedor"
-  }
-]
+## 1. Configuração do Projeto Backend
 
+- **1.1. Estrutura de Diretórios:**
+  - Criar um diretório `backend` na raiz do projeto para isolar o código do servidor.
+- **1.2. Inicialização e Dependências:**
+  - Dentro de `backend`, inicializar um novo projeto Node.js com `npm init -y`.
+  - Instalar as dependências principais:
+    - `express`: Para criar o servidor e as rotas da API.
+    - `pg`: Driver para conectar com o banco de dados PostgreSQL.
+    - `cors`: Para habilitar requisições entre o frontend e o backend.
+    - `dotenv`: Para gerenciar variáveis de ambiente (como senhas e portas).
+    - `jsonwebtoken`: Para autenticação de usuários administradores.
+    - `bcryptjs`: Para criptografar senhas.
+  - Instalar as dependências de desenvolvimento:
+    - `nodemon`: Para reiniciar o servidor automaticamente durante o desenvolvimento.
+- **1.3. Script de Início:**
+  - Configurar um script `dev` no `package.json` do backend para iniciar o servidor com `nodemon`.
 
-7.2. mock_categorias.json (Para listar no menu e no admin)
-JSON
-[
-  { "id": 101, "nome": "Bovinos", "slug": "bovinos" },
-  { "id": 102, "nome": "Aves", "slug": "aves" },
-  { "id": 103, "nome": "Suínos", "slug": "suinos" },
-  { "id": 104, "nome": "Congelados", "slug": "congelados" }
-]
+## 2. Configuração do Banco de Dados
 
+- **2.1. Banco de Dados:**
+  - Utilizar PostgreSQL.
+  - Criar um banco de dados chamado `real_carnes_db`.
+- **2.2. Schema do Banco de Dados:**
+  - Definir e criar as seguintes tabelas:
+    - `produtos`: Para armazenar os detalhes dos produtos.
+    - `categorias`: Para agrupar os produtos.
+    - `pedidos_orcamento`: Para armazenar os pedidos de orçamento enviados pelos clientes.
+    - `itens_pedido_orcamento`: Para os produtos dentro de cada pedido.
+    - `usuarios_admin`: Para os administradores do sistema.
+    - `banners`: Para os banners da página inicial.
+- **2.3. Migrations (Opcional, mas recomendado):**
+  - Utilizar uma ferramenta como `node-pg-migrate` para gerenciar as alterações no schema do banco de dados de forma versionada.
 
-7.3. mock_produtos.json (O catálogo principal)
-JSON
-[
-  {
-    "id": 1001,
-    "sku": "RC-P1001",
-    "nome": "Picanha Real Gold (Peça)",
-    "descricao": "O corte mais nobre e desejado. A Picanha Real Gold possui uma capa de gordura uniforme que garante maciez e sabor inigualável para o seu churrasco.",
-    "especificacoes": "Caixa: Aprox. 18 kg | 12 a 15 peças por caixa",
-    "categoria_id": 101,
-    "is_destaque": true,
-    "status": "ativo",
-    "imagens": [
-      "https://placehold.co/800x600/b02a37/white?text=Picanha+1",
-      "https://placehold.co/800x600/b02a37/white?text=Picanha+2"
-    ]
-  },
-  {
-    "id": 1002,
-    "sku": "RC-A1002",
-    "nome": "Peito de Frango (IQF)",
-    "descricao": "Peito de frango em cubos, congelado individualmente (IQF) para facilitar o porcionamento. Perfeito para restaurantes e cozinhas industriais.",
-    "especificacoes": "Caixa: 20 kg | 4 pacotes de 5 kg",
-    "categoria_id": 102,
-    "is_destaque": true,
-    "status": "ativo",
-    "imagens": [
-      "https://placehold.co/800x600/b02a37/white?text=Frango+1"
-    ]
-  },
-  {
-    "id": 1003,
-    "sku": "RC-S1003",
-    "nome": "Costela Suína (Ripa)",
-    "descricao": "Costelinha suína em ripa, ideal para assados e barbecue. Carne macia e de alta qualidade.",
-    "especificacoes": "Caixa: 15 kg | 8 a 10 peças por caixa",
-    "categoria_id": 103,
-    "is_destaque": false,
-    "status": "ativo",
-    "imagens": [
-      "https://placehold.co/800x600/b02a37/white?text=Costela+Suina"
-    ]
-  }
-]
+## 3. Desenvolvimento da API
 
+- **3.1. Estrutura da API:**
+  - Organizar o código em rotas, controladores e modelos para manter a separação de responsabilidades.
+- **3.2. Endpoints da API (CRUD):**
+  - **Produtos:**
+    - `GET /api/produtos`: Listar todos os produtos com filtros por categoria.
+    - `GET /api/produtos/:id`: Obter detalhes de um produto específico.
+    - `POST /api/produtos`: (Admin) Criar um novo produto.
+    - `PUT /api/produtos/:id`: (Admin) Atualizar um produto.
+    - `DELETE /api/produtos/:id`: (Admin) Deletar um produto.
+  - **Categorias:**
+    - `GET /api/categorias`: Listar todas as categorias.
+    - `POST /api/categorias`: (Admin) Criar uma nova categoria.
+    - `PUT /api/categorias/:id`: (Admin) Atualizar uma categoria.
+  - **Pedidos de Orçamento:**
+    - `POST /api/pedidos-orcamento`: Criar um novo pedido de orçamento.
+    - `GET /api/pedidos-orcamento`: (Admin) Listar todos os pedidos.
+    - `GET /api/pedidos-orcamento/:id`: (Admin) Obter detalhes de um pedido.
+  - **Banners:**
+    - `GET /api/banners`: Listar todos os banners.
+    - `POST /api/banners`: (Admin) Adicionar um novo banner.
+    - `DELETE /api/banners/:id`: (Admin) Remover um banner.
+- **3.3. Autenticação:**
+  - Criar um endpoint `POST /api/admin/login` para autenticar usuários administradores.
+  - Proteger as rotas de administração com um middleware que verifica o token JWT.
 
-7.4. mock_banners_home.json (Para o carrossel da homepage)
-JSON
-[
-  {
-    "id": 1,
-    "imagem_desktop": "https://placehold.co/1400x450/b02a37/white?text=Banner+Oferta+Picanha",
-    "imagem_mobile": "https://placehold.co/800x600/b02a37/white?text=Banner+Picanha+Mobile",
-    "link_url": "/produto/1001"
-  },
-  {
-    "id": 2,
-    "imagem_desktop": "https://placehold.co/1400x450/e0a800/white?text=Banner+Linha+Aves",
-    "imagem_mobile": "https://placehold.co/800x600/e0a800/white?text=Banner+Aves+Mobile",
-    "link_url": "/categoria/aves"
-  }
-]
+## 4. Integração com o Frontend
 
+- **4.1. Remoção dos Dados Mock:**
+  - Remover o `MockDataContext` e todos os seus usos.
+- **4.2. Requisições à API:**
+  - Utilizar `fetch` ou `axios` para fazer as chamadas à nova API a partir dos componentes React.
+  - Configurar um proxy no `vite.config.ts` para facilitar as requisições durante o desenvolvimento e evitar problemas de CORS.
+- **4.3. Gerenciamento de Estado:**
+  - Utilizar `react-query` (que já está no projeto) para gerenciar o estado dos dados, cache, e o estado de carregamento/erro das requisições.
+- **4.4. Formulários:**
+  - Conectar os formulários de contato e de pedido de orçamento para enviar os dados para a API.
 
-7.5. mock_solicitacoes_orcamento.json (Para o painel admin)
-JSON
-[
-  {
-    "id": 9001,
-    "data": "2025-10-20T14:30:00Z",
-    "status": "novo",
-    "cliente_nome": "João Silva",
-    "cliente_empresa": "Restaurante Sabor & Arte",
-    "cliente_cnpj": "12.345.678/0001-99",
-    "cliente_email": "compras@saborearte.com",
-    "cliente_telefone": "11988887777",
-    "itens_solicitados": [
-      { "produto_id": 1001, "produto_nome": "Picanha Real Gold (Peça)", "quantidade": 2 },
-      { "produto_id": 1003, "produto_nome": "Costela Suína (Ripa)", "quantidade": 5 }
-    ]
-  },
-  {
-    "id": 9002,
-    "data": "2025-10-19T10:15:00Z",
-    "status": "em_atendimento",
-    "cliente_nome": "Maria Souza",
-    "cliente_empresa": "Mercado Central",
-    "cliente_cnpj": "98.765.432/0001-11",
-    "cliente_email": "maria.souza@mercadocentral.com",
-    "cliente_telefone": "21977776666",
-    "itens_solicitados": [
-      { "produto_id": 1002, "produto_nome": "Peito de Frango (IQF)", "quantidade": 10 }
-    ]
-  }
-]
+## 5. Próximos Passos e Melhorias
+
+- **5.1. Validação:**
+  - Implementar validação de dados tanto no frontend (com `zod`) quanto no backend para garantir a integridade dos dados.
+- **5.2. Testes:**
+  - Criar testes unitários e de integração para a API.
+- **5.3. Deploy:**
+  - Criar um plano para o deploy do backend e do banco de dados.
