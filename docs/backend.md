@@ -1,4 +1,4 @@
-Documento de Requisitos de Produto (PRD): E-commerce Real Carnes (MVP)
+Documento de Requisitos de Produto (PRD): E-commerce Royal Alimentos (MVP)
 1. Introdução e Visão Geral ... (sem alteração) ...
 2. Público-Alvo ... (sem alteração) ...
 3. Fluxo Principal do Usuário (Cliente) ... (sem alteração) ...
@@ -9,7 +9,7 @@ Documento de Requisitos de Produto (PRD): E-commerce Real Carnes (MVP)
 Esta seção detalha todas as funcionalidades da área /admin, que será o Centro de Controle do Site (CMS). O acesso é restrito a usuários internos.
 4.2.1. Autenticação
 Tela de Login (/admin/login): Campos de "E-mail" e "Senha".
-Lógica de Mock: Para o MVP, a autenticação será simulada. O frontend irá aceitar um usuário e senha estáticos (ex: admin@realcarnes.com.br / admin123). Se os dados baterem, o usuário é "logado" e pode ver as telas do admin.
+Lógica de Mock: Para o MVP, a autenticação será simulada. O frontend irá aceitar um usuário e senha estáticos (ex: admin@royalalimentos.com.br / admin123). Se os dados baterem, o usuário é "logado" e pode ver as telas do admin.
 4.2.2. Dashboard (Página Inicial do Admin)
 Visão geral com estatísticas (widgets) dos dados mock:
 Widget: "Novas Solicitações de Orçamento" (contagem de orçamentos com status "Novo").
@@ -56,14 +56,14 @@ JSON
   {
     "id": 1,
     "nome": "Admin Master",
-    "email": "admin@realcarnes.com.br",
+    "email": "admin@royalalimentos.com.br",
     "senha_mock": "admin123",
     "nivel": "admin"
   },
   {
     "id": 2,
     "nome": "Felipe Vendedor",
-    "email": "vendedor@realcarnes.com.br",
+    "email": "vendedor@royalalimentos.com.br",
     "senha_mock": "vendas123",
     "nivel": "vendedor"
   }
