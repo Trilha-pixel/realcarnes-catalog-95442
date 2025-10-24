@@ -196,46 +196,74 @@ export const Header = () => {
       {/* ============================ */}
       {/* VERSÃO MOBILE */}
       {/* ============================ */}
-      <header className={`lg:hidden sticky top-0 z-50 w-full bg-gradient-to-r from-destructive via-destructive to-destructive/95 transition-shadow duration-300 ${scrolled ? 'shadow-lg' : ''}`}>
-        <div className="container px-4">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo Mobile */}
-            <Link to="/" className="flex items-center hover:opacity-80 transition-opacity">
-              <img 
-                src={logoRoyalAlimentos} 
-                alt="Royal Alimentos" 
-                className="h-14 w-auto object-contain"
-              />
-            </Link>
-
-            {/* Ações Mobile */}
-            <div className="flex items-center gap-2">
-              {/* Carrinho Mobile */}
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                asChild 
-                className="relative text-destructive-foreground hover:text-white hover:bg-white/10"
+      <header className={`lg:hidden sticky top-0 z-50 w-full transition-shadow duration-300 ${scrolled ? 'shadow-lg' : ''}`}>
+        {/* Barra Superior - Vermelha com Contatos */}
+        <div className="bg-gradient-to-r from-destructive via-destructive to-destructive/95">
+          <div className="container px-4">
+            <div className="flex items-center justify-start gap-8 h-10 text-sm">
+              <a 
+                href="tel:+552126718074"
+                className="flex items-center gap-2 text-destructive-foreground hover:text-white transition-colors font-medium"
               >
-                <Link to="/orcamento">
-                  <ShoppingCart className="h-5 w-5" />
-                  {cartCount > 0 && (
-                    <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-white text-destructive text-xs flex items-center justify-center font-bold shadow-md animate-in zoom-in-50">
-                      {cartCount}
-                    </span>
-                  )}
-                </Link>
-              </Button>
+                <Phone className="h-4 w-4" />
+                (21) 2671-8074
+              </a>
 
-              {/* Botão Menu Hambúrguer */}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setMobileMenuOpen(true)}
-                className="text-destructive-foreground hover:text-white hover:bg-white/10"
+              <a 
+                href="https://wa.me/5521967188074" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-destructive-foreground hover:text-white transition-colors font-medium"
               >
-                <Menu className="h-6 w-6" />
-              </Button>
+                <MessageCircle className="h-4 w-4" />
+                Atendimento online
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {/* Barra Principal - Cinza com Logo e Ações */}
+        <div className="bg-muted/50 border-b">
+          <div className="container px-4">
+            <div className="flex items-center justify-between h-16">
+              {/* Logo Mobile */}
+              <Link to="/" className="flex items-center hover:opacity-80 transition-opacity">
+                <img 
+                  src={logoRoyalAlimentos} 
+                  alt="Royal Alimentos" 
+                  className="h-14 w-auto object-contain"
+                />
+              </Link>
+
+              {/* Ações Mobile */}
+              <div className="flex items-center gap-2">
+                {/* Carrinho Mobile */}
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  asChild 
+                  className="relative text-foreground hover:text-primary hover:bg-accent/60"
+                >
+                  <Link to="/orcamento">
+                    <ShoppingCart className="h-5 w-5" />
+                    {cartCount > 0 && (
+                      <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center font-bold shadow-md animate-in zoom-in-50">
+                        {cartCount}
+                      </span>
+                    )}
+                  </Link>
+                </Button>
+
+                {/* Botão Menu Hambúrguer */}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setMobileMenuOpen(true)}
+                  className="text-foreground hover:text-primary hover:bg-accent/60"
+                >
+                  <Menu className="h-6 w-6" />
+                </Button>
+              </div>
             </div>
           </div>
         </div>
