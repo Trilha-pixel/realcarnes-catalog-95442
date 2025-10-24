@@ -111,21 +111,17 @@ export const Header = () => {
                     key={link.to}
                     to={link.to}
                     className={`
-                      px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200
+                      px-5 py-2.5 pb-2 text-sm font-semibold transition-all duration-200
                       relative group
                       ${isActivePath(link.to) 
-                        ? 'text-primary bg-accent shadow-sm' 
-                        : 'text-foreground hover:text-primary hover:bg-accent/60'
+                        ? 'text-primary' 
+                        : 'text-foreground hover:text-primary'
                       }
                     `}
                   >
                     {link.label}
-                    {/* Underline animado no hover */}
-                    <span className={`
-                      absolute bottom-1 left-2 right-2 h-0.5 bg-primary rounded-full
-                      transform origin-left transition-transform duration-300
-                      ${isActivePath(link.to) ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'}
-                    `} />
+                    {/* Linha minimalista animada */}
+                    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-red-600 transition-all duration-300 group-hover:w-full"></span>
                   </Link>
                 ))}
               </nav>
