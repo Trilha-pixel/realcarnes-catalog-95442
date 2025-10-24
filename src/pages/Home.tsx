@@ -188,31 +188,32 @@ const Home = () => {
 
         {/* CTA Section */}
         <section className="relative py-28 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/60 to-black/70 z-10" />
           <div 
             className="absolute inset-0 bg-cover bg-center"
             style={{
               backgroundImage: `url(${heroPicanhaImage})`,
             }}
           />
+          {/* Overlay escuro para melhorar legibilidade */}
+          <div className="absolute inset-0 bg-black/70 z-10" />
           
           <div className="container relative z-20 px-4 text-center text-white">
             <div className="max-w-3xl mx-auto space-y-6">
-              <h2 className="font-poppins text-4xl md:text-5xl font-semibold leading-tight">
+              <h2 className="font-poppins text-4xl md:text-5xl font-bold leading-tight text-white drop-shadow-2xl" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.8), 0 0 8px rgba(0,0,0,0.5)' }}>
                 Pronto para elevar a qualidade do seu negócio?
               </h2>
-              <p className="font-poppins text-lg md:text-xl text-white/90 max-w-2xl mx-auto font-light leading-relaxed">
+              <p className="font-poppins text-lg md:text-xl text-white max-w-2xl mx-auto font-medium leading-relaxed drop-shadow-lg" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.8)' }}>
                 Solicite um orçamento personalizado e descubra como podemos ajudar seu negócio.
               </p>
               <div className="pt-4">
                 <Button 
                   size="lg" 
                   asChild 
-                  className="bg-gold hover:bg-gold-hover text-gold-foreground font-poppins font-semibold text-base h-14 px-12 shadow-gold transition-all duration-300 hover:shadow-[0_6px_20px_hsl(38_75%_58%/0.35)] hover:scale-105"
+                  className="bg-red-600 hover:bg-red-700 text-white font-poppins font-bold text-lg h-16 px-12 rounded-lg shadow-2xl transition-all duration-300 hover:shadow-[0_8px_25px_rgba(220,38,38,0.4)] hover:scale-105 border-0"
                 >
                   <Link to="/orcamento">
                     Solicitar Orçamento
-                    <ArrowRight className="ml-2 h-5 w-5" />
+                    <ArrowRight className="ml-2 h-6 w-6" />
                   </Link>
                 </Button>
               </div>
