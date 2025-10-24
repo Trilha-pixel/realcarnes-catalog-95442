@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useMockData } from '@/contexts/MockDataContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useState, useEffect } from 'react';
-import logoRealCarnes from '@/assets/logo-real-carnes.png';
+import logoRoyalAlimentos from '@/assets/royal-logo-transparent.png';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -91,15 +91,15 @@ export const Header = () => {
           </div>
         </div>
 
-        {/* Barra Principal - Branca com Logo, Navegação e Ações */}
-        <div className="bg-background border-b">
+        {/* Barra Principal - Cinza com Logo, Navegação e Ações */}
+        <div className="bg-muted/50 border-b">
           <div className="container px-4">
             <div className="flex items-center justify-between h-20">
               {/* Logo */}
               <Link to="/" className="flex items-center hover:opacity-80 transition-opacity">
                 <img 
-                  src={logoRealCarnes} 
-                  alt="Real Carnes" 
+                  src={logoRoyalAlimentos} 
+                  alt="Royal Alimentos" 
                   className="h-20 w-auto object-contain"
                 />
               </Link>
@@ -202,8 +202,8 @@ export const Header = () => {
             {/* Logo Mobile */}
             <Link to="/" className="flex items-center hover:opacity-80 transition-opacity">
               <img 
-                src={logoRealCarnes} 
-                alt="Real Carnes" 
+                src={logoRoyalAlimentos} 
+                alt="Royal Alimentos" 
                 className="h-14 w-auto object-contain"
               />
             </Link>
@@ -262,8 +262,8 @@ export const Header = () => {
               {/* Header do Menu com Logo e Botão Fechar */}
               <div className="flex items-center justify-between p-4 border-b bg-gradient-to-br from-accent/40 to-accent/10">
                 <img 
-                  src={logoRealCarnes} 
-                  alt="Real Carnes" 
+                  src={logoRoyalAlimentos} 
+                  alt="Royal Alimentos" 
                   className="h-14 w-auto object-contain"
                 />
                 <Button

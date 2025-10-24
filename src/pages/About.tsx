@@ -15,7 +15,7 @@ const About = () => {
               A Empresa
             </h1>
             <p className="text-lg md:text-xl text-white/90 text-center max-w-3xl mx-auto">
-              Conheça a história e os valores da Real Carnes
+              Conheça a história e os valores da Royal Alimentos
             </p>
           </div>
         </section>
@@ -27,9 +27,9 @@ const About = () => {
               <div className="prose prose-lg max-w-none">
                 <h2 className="text-3xl font-bold text-foreground mb-6">Nossa História</h2>
                 <p className="text-muted-foreground mb-6">
-                  A Real Carnes é uma empresa consolidada no mercado de carnes premium, 
-                  oferecendo produtos de alta qualidade para clientes que buscam excelência 
-                  e confiabilidade em cada compra.
+                  A Royal Alimentos é uma distribuidora consolidada no mercado de alimentos 
+                  congelados e refrigerados, oferecendo produtos de alta qualidade para 
+                  clientes que buscam excelência e confiabilidade em cada compra.
                 </p>
                 <p className="text-muted-foreground mb-8">
                   Com anos de experiência no setor, construímos uma reputação sólida baseada 

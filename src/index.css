@@ -1,114 +1,111 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Roboto:wght@300;400;500;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
+/* ROYAL ALIMENTOS - Design System
+Cores extraídas da identidade visual da marca
 */
 
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 0 0% 10%;
+    --foreground: 223 58% 26%;
 
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 10%;
+    --card-foreground: 223 58% 26%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 10%;
+    --popover-foreground: 223 58% 26%;
 
-    /* Real Carnes Red - Primary Brand Color from Logo */
-    --primary: 358 73% 47%;
+    /* ROYAL Navy Blue - Cor Principal (do texto ROYAL) */
+    --primary: 223 58% 26%;
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 358 73% 40%;
+    --primary-hover: 223 58% 20%;
 
-    /* Gold Accent - Premium Touch from Crown */
-    --gold: 39 67% 56%;
-    --gold-foreground: 0 0% 10%;
-    --gold-hover: 39 67% 50%;
+    /* ALIMENTOS Red - Cor Secundária (do texto ALIMENTOS) */
+    --secondary: 0 85% 50%;
+    --secondary-foreground: 0 0% 100%;
+    --secondary-hover: 0 85% 45%;
 
-    --secondary: 0 0% 96%;
-    --secondary-foreground: 0 0% 10%;
-
-    --muted: 0 0% 96%;
+    --muted: 0 0% 92%;
     --muted-foreground: 0 0% 45%;
 
-    --accent: 358 73% 47%;
+    --accent: 0 85% 50%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 358 73% 47%;
+    --destructive: 0 85% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 90%;
-    --input: 0 0% 90%;
-    --ring: 358 73% 47%;
+    --border: 0 0% 88%;
+    --input: 0 0% 88%;
+    --ring: 223 58% 26%;
 
     --radius: 0.75rem;
 
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(358 73% 47%), hsl(358 73% 37%));
-    --gradient-gold: linear-gradient(135deg, hsl(39 67% 56%), hsl(53 93% 77%));
-    --gradient-hero: linear-gradient(135deg, hsl(0 0% 0% / 0.4), hsl(358 73% 20% / 0.3));
-    --gradient-cta: linear-gradient(135deg, hsl(358 73% 47%), hsl(358 73% 40%));
+    /* Gradientes ROYAL ALIMENTOS */
+    --gradient-primary: linear-gradient(135deg, hsl(223 58% 26%), hsl(223 58% 20%));
+    --gradient-secondary: linear-gradient(135deg, hsl(0 85% 50%), hsl(0 85% 45%));
+    --gradient-hero: linear-gradient(135deg, hsl(223 58% 26% / 0.95), hsl(0 85% 50% / 0.1));
+    --gradient-cta: linear-gradient(135deg, hsl(0 85% 50%), hsl(0 85% 45%));
 
-    /* Shadows */
+    /* Sombras */
     --shadow-soft: 0 2px 8px hsl(0 0% 0% / 0.08);
     --shadow-medium: 0 4px 16px hsl(0 0% 0% / 0.12);
     --shadow-strong: 0 8px 32px hsl(0 0% 0% / 0.16);
-    --shadow-gold: 0 4px 16px hsl(39 67% 56% / 0.3);
+    --shadow-royal: 0 4px 16px hsl(223 58% 26% / 0.2);
+    --shadow-red: 0 4px 16px hsl(0 85% 50% / 0.2);
 
     --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 0 0% 20%;
-    --sidebar-primary: 358 73% 47%;
+    --sidebar-foreground: 223 58% 26%;
+    --sidebar-primary: 223 58% 26%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 0 0% 95%;
-    --sidebar-accent-foreground: 0 0% 10%;
+    --sidebar-accent-foreground: 223 58% 26%;
     --sidebar-border: 0 0% 90%;
-    --sidebar-ring: 358 73% 47%;
+    --sidebar-ring: 223 58% 26%;
   }
 
   .dark {
-    --background: 0 0% 8%;
+    --background: 223 58% 8%;
     --foreground: 0 0% 95%;
 
-    --card: 0 0% 12%;
+    --card: 223 58% 12%;
     --card-foreground: 0 0% 95%;
 
-    --popover: 0 0% 12%;
+    --popover: 223 58% 12%;
     --popover-foreground: 0 0% 95%;
 
-    --primary: 358 73% 52%;
+    --primary: 223 58% 35%;
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 358 73% 47%;
+    --primary-hover: 223 58% 30%;
 
-    --gold: 39 67% 65%;
-    --gold-foreground: 0 0% 10%;
-    --gold-hover: 39 67% 60%;
+    --secondary: 0 85% 55%;
+    --secondary-foreground: 0 0% 100%;
+    --secondary-hover: 0 85% 50%;
 
-    --secondary: 0 0% 15%;
-    --secondary-foreground: 0 0% 95%;
-
-    --muted: 0 0% 15%;
+    --muted: 223 58% 15%;
     --muted-foreground: 0 0% 65%;
 
-    --accent: 358 73% 52%;
+    --accent: 0 85% 55%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 358 73% 45%;
+    --destructive: 0 85% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 20%;
-    --input: 0 0% 20%;
-    --ring: 358 73% 52%;
+    --border: 223 58% 20%;
+    --input: 223 58% 20%;
+    --ring: 223 58% 35%;
 
-    --sidebar-background: 0 0% 10%;
+    --sidebar-background: 223 58% 10%;
     --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 358 73% 52%;
+    --sidebar-primary: 223 58% 35%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 0 0% 15%;
+    --sidebar-accent: 223 58% 15%;
     --sidebar-accent-foreground: 0 0% 95%;
-    --sidebar-border: 0 0% 20%;
-    --sidebar-ring: 358 73% 52%;
+    --sidebar-border: 223 58% 20%;
+    --sidebar-ring: 223 58% 35%;
   }
 }
 
@@ -118,18 +115,116 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground font-poppins;
+    @apply bg-background text-foreground;
+    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-weight: 700;
+    color: hsl(var(--primary));
+  }
+
+  h1 {
+    font-weight: 800;
   }
 }
 
 /* Animações personalizadas */
-@keyframes slideInRight {
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+@keyframes slide-in {
   from {
     opacity: 0;
-    transform: translateX(20px);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
-    transform: translateX(0);
+    transform: translateY(0);
   }
+}
+
+/* Classes utilitárias personalizadas */
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 2s ease-in-out infinite;
+}
+
+.animate-slide-in {
+  animation: slide-in 0.5s ease-out;
+}
+
+/* Gradiente de texto */
+.text-gradient {
+  background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Botão com efeito hover suave */
+.btn-royal {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  transition: all 0.3s ease;
+}
+
+.btn-royal:hover {
+  background: hsl(var(--primary-hover));
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-royal);
+}
+
+.btn-red {
+  background: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
+  transition: all 0.3s ease;
+}
+
+.btn-red:hover {
+  background: hsl(var(--secondary-hover));
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-red);
+}
+
+/* Elementos decorativos inspirados no logo */
+.royal-curve-top {
+  position: relative;
+}
+
+.royal-curve-top::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, hsl(var(--accent)) 0%, transparent 50%);
+  border-radius: 0 0 100% 0;
+}
+
+.royal-curve-bottom {
+  position: relative;
+}
+
+.royal-curve-bottom::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, transparent 50%, hsl(var(--accent)) 100%);
+  border-radius: 0 100% 0 0;
 }
