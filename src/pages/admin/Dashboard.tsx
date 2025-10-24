@@ -79,19 +79,19 @@ const Dashboard = () => {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
           {stats.map((stat) => (
             <Card key={stat.title}>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
+                <CardTitle className="text-xs sm:text-sm font-medium">
                   {stat.title}
                 </CardTitle>
                 <div className={`p-2 rounded-full ${stat.bgColor}`}>
-                  <stat.icon className={`h-4 w-4 ${stat.color}`} />
+                  <stat.icon className={`h-3 w-3 sm:h-4 sm:w-4 ${stat.color}`} />
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{stat.value}</div>
+                <div className="text-lg sm:text-2xl font-bold">{stat.value}</div>
               </CardContent>
             </Card>
           ))}
@@ -100,53 +100,56 @@ const Dashboard = () => {
         {/* Latest Quotes Table */}
         <Card>
           <CardHeader>
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <CardTitle>Últimas Solicitações de Orçamento</CardTitle>
               <Button 
                 variant="outline"
                 onClick={() => navigate('/admin/solicitacoes')}
+                className="w-full sm:w-auto"
               >
                 Ver Todas
               </Button>
             </div>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>ID</TableHead>
-                  <TableHead>Data</TableHead>
-                  <TableHead>Cliente</TableHead>
-                  <TableHead>Empresa</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Itens</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {latestQuotes.length === 0 ? (
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center text-muted-foreground">
-                      Nenhuma solicitação encontrada
-                    </TableCell>
+                    <TableHead className="min-w-[80px]">ID</TableHead>
+                    <TableHead className="min-w-[100px]">Data</TableHead>
+                    <TableHead className="min-w-[120px]">Cliente</TableHead>
+                    <TableHead className="min-w-[120px] hidden sm:table-cell">Empresa</TableHead>
+                    <TableHead className="min-w-[100px]">Status</TableHead>
+                    <TableHead className="min-w-[80px] hidden md:table-cell">Itens</TableHead>
                   </TableRow>
-                ) : (
-                  latestQuotes.map((quote) => (
-                    <TableRow 
-                      key={quote.id}
-                      className="cursor-pointer hover:bg-muted/50"
-                      onClick={() => navigate(`/admin/solicitacoes/${quote.id}`)}
-                    >
-                      <TableCell className="font-medium">{quote.id}</TableCell>
-                      <TableCell>{new Date(quote.date).toLocaleDateString('pt-BR')}</TableCell>
-                      <TableCell>{quote.customer.name}</TableCell>
-                      <TableCell>{quote.customer.company}</TableCell>
-                      <TableCell>{getStatusBadge(quote.status)}</TableCell>
-                      <TableCell>{quote.items.length} produto(s)</TableCell>
+                </TableHeader>
+                <TableBody>
+                  {latestQuotes.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={6} className="text-center text-muted-foreground">
+                        Nenhuma solicitação encontrada
+                      </TableCell>
                     </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
+                  ) : (
+                    latestQuotes.map((quote) => (
+                      <TableRow 
+                        key={quote.id}
+                        className="cursor-pointer hover:bg-muted/50"
+                        onClick={() => navigate(`/admin/solicitacoes/${quote.id}`)}
+                      >
+                        <TableCell className="font-medium">{quote.id}</TableCell>
+                        <TableCell>{new Date(quote.date).toLocaleDateString('pt-BR')}</TableCell>
+                        <TableCell className="font-medium">{quote.customer.name}</TableCell>
+                        <TableCell className="hidden sm:table-cell">{quote.customer.company}</TableCell>
+                        <TableCell>{getStatusBadge(quote.status)}</TableCell>
+                        <TableCell className="hidden md:table-cell">{quote.items.length} produto(s)</TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
           </CardContent>
         </Card>
       </div>

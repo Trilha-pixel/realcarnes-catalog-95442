@@ -1,4 +1,4 @@
-import { ReactNode, useEffect } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAdminAuth } from '@/contexts/AdminAuthContext';
 import {
@@ -9,6 +9,8 @@ import {
   Users,
   FileText,
   LogOut,
+  Menu,
+  X,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -21,6 +23,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { isAdminAuthenticated, adminUser, adminLogout } = useAdminAuth();
+  const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     if (!isAdminAuthenticated) {
@@ -50,8 +53,25 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
 
   return (
     <div className="min-h-screen flex w-full bg-background">
-      {/* Sidebar */}
-      <aside className="w-64 border-r bg-card flex flex-col">
+      {/* Mobile Header */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-card border-b">
+        <div className="flex items-center justify-between p-4">
+          <div>
+            <h1 className="text-lg font-bold text-primary">Royal Alimentos</h1>
+            <p className="text-xs text-muted-foreground">Painel Admin</p>
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setMobileMenuOpen(!isMobileMenuOpen)}
+          >
+            {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </Button>
+        </div>
+      </div>
+
+      {/* Desktop Sidebar */}
+      <aside className="hidden lg:flex w-64 border-r bg-card flex-col">
         <div className="p-6">
           <h1 className="text-2xl font-bold text-primary">Royal Alimentos</h1>
           <p className="text-sm text-accent font-semibold mt-1">Painel Admin</p>
@@ -94,9 +114,72 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
         </div>
       </aside>
 
+      {/* Mobile Sidebar Overlay */}
+      {isMobileMenuOpen && (
+        <>
+          <div 
+            className="lg:hidden fixed inset-0 bg-black/50 z-40"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+          <aside className="lg:hidden fixed top-0 left-0 bottom-0 w-80 bg-card border-r z-50 overflow-y-auto">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h1 className="text-xl font-bold text-primary">Royal Alimentos</h1>
+                  <p className="text-sm text-muted-foreground">Painel Admin</p>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <X className="h-5 w-5" />
+                </Button>
+              </div>
+              
+              <Separator className="mb-6" />
+              
+              <nav className="space-y-2 mb-6">
+                {menuItems.map((item) => (
+                  <Link key={item.path} to={item.path} onClick={() => setMobileMenuOpen(false)}>
+                    <Button
+                      variant={isActive(item.path) ? 'secondary' : 'ghost'}
+                      className="w-full justify-start"
+                    >
+                      <item.icon className="mr-2 h-4 w-4" />
+                      {item.label}
+                    </Button>
+                  </Link>
+                ))}
+              </nav>
+
+              <Separator className="mb-6" />
+              
+              <div className="space-y-4">
+                <div className="px-3 py-2 bg-muted rounded-md">
+                  <p className="text-sm font-medium">{adminUser?.nome}</p>
+                  <p className="text-xs text-muted-foreground">{adminUser?.email}</p>
+                  <p className="text-xs text-muted-foreground capitalize mt-1">
+                    Nível: {adminUser?.nivel}
+                  </p>
+                </div>
+                <Button
+                  variant="outline"
+                  className="w-full justify-start"
+                  onClick={handleLogout}
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Sair
+                </Button>
+              </div>
+            </div>
+          </aside>
+        </>
+      )}
+
       {/* Main Content */}
-      <main className="flex-1 overflow-auto">
-        <div className="container py-8 px-8">
+      <main className="flex-1 overflow-auto lg:ml-0">
+        <div className="container py-8 px-4 lg:px-8 pt-20 lg:pt-8">
           {children}
         </div>
       </main>
