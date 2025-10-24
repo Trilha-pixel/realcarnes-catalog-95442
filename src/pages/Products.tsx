@@ -58,14 +58,16 @@ const Products = () => {
       
       <main className="flex-1">
         {/* Page Header */}
-        <section className="bg-gradient-primary text-white py-12">
+        <section className="bg-gradient-to-r from-primary via-primary to-primary/90 py-16 md:py-20">
           <div className="container px-4">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              {activeCategory ? activeCategory.name : 'Nossos Produtos'}
-            </h1>
-            <p className="text-xl text-white/90 max-w-2xl">
-              Explore nosso catálogo completo de carnes premium e produtos especiais
-            </p>
+            <div className="max-w-4xl mx-auto text-center">
+              <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 font-poppins">
+                {activeCategory ? activeCategory.name : 'Nossos Produtos'}
+              </h1>
+              <p className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto font-poppins font-light">
+                Explore nosso catálogo completo de carnes premium e produtos especiais para o seu negócio
+              </p>
+            </div>
           </div>
         </section>
 
