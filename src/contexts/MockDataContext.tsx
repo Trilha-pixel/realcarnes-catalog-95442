@@ -1,18 +1,5 @@
 import { createContext, useContext, useState, useCallback, useEffect, ReactNode } from 'react';
-
-// Import product images
-import picanhaImg from '@/assets/products/picanha.jpg';
-import contrafileImg from '@/assets/products/contrafile.jpg';
-import costelaImg from '@/assets/products/costela.jpg';
-import lomboSuinoImg from '@/assets/products/lombo-suino.jpg';
-import coxaFrangoImg from '@/assets/products/coxa-frango.jpg';
-import peitoFrangoImg from '@/assets/products/peito-frango.jpg';
-import linguicaImg from '@/assets/products/linguica.jpg';
-import hamburguerImg from '@/assets/products/hamburguer.jpg';
-import alcatraImg from '@/assets/products/alcatra.jpg';
-import fileMignonImg from '@/assets/products/file-mignon.jpg';
-import costelinhaSuinaImg from '@/assets/products/costelinha-suina.jpg';
-import asaFrangoImg from '@/assets/products/asa-frango.jpg';
+import { generateProducts } from '@/lib/productGenerator';
 
 // Import category images
 import bovinosImg from '@/assets/categories/bovinos.jpg';
@@ -90,129 +77,11 @@ const MOCK_CATEGORIES: Category[] = [
   { id: '6', name: 'Especiais', slug: 'especiais', icon: '⭐', image: especialImg },
 ];
 
-// Mock Products
-const MOCK_PRODUCTS: Product[] = [
-  {
-    id: '1',
-    name: 'Picanha Maturada',
-    sku: 'BOV-001',
-    description: 'Picanha nobre maturada por 21 dias, com marmoreio excepcional. Ideal para churrascos premium e ocasiões especiais.',
-    images: [picanhaImg, picanhaImg, picanhaImg],
-    category: 'bovinos',
-    packaging: 'Caixa: 12 kg a 15 kg, 8 a 10 peças por caixa',
-    featured: true,
-  },
-  {
-    id: '2',
-    name: 'Contrafilé Resfriado',
-    sku: 'BOV-002',
-    description: 'Contrafilé premium resfriado, maciez e sabor incomparáveis. Perfeito para bifes e grelhados.',
-    images: [contrafileImg, contrafileImg],
-    category: 'bovinos',
-    packaging: 'Caixa: 15 kg a 18 kg, 12 a 15 peças por caixa',
-    featured: true,
-  },
-  {
-    id: '3',
-    name: 'Costela Bovina',
-    sku: 'BOV-003',
-    description: 'Costela bovina com osso, ideal para assados lentos e churrascos tradicionais.',
-    images: [costelaImg],
-    category: 'bovinos',
-    packaging: 'Caixa: 20 kg a 25 kg, 10 a 12 peças por caixa',
-    featured: false,
-  },
-  {
-    id: '4',
-    name: 'Lombo Suíno',
-    sku: 'SUI-001',
-    description: 'Lombo suíno de primeira qualidade, limpo e aparado. Versátil para diversas preparações.',
-    images: [lomboSuinoImg, lomboSuinoImg],
-    category: 'suinos',
-    packaging: 'Caixa: 10 kg a 12 kg, 6 a 8 peças por caixa',
-    featured: true,
-  },
-  {
-    id: '5',
-    name: 'Coxa e Sobrecoxa de Frango',
-    sku: 'AVE-001',
-    description: 'Coxa e sobrecoxa de frango congelada, qualidade superior para restaurantes.',
-    images: [coxaFrangoImg],
-    category: 'aves',
-    packaging: 'Caixa: 15 kg, aproximadamente 60 peças por caixa',
-    featured: true,
-  },
-  {
-    id: '6',
-    name: 'Peito de Frango',
-    sku: 'AVE-002',
-    description: 'Peito de frango sem osso e sem pele, congelado. Ideal para preparações rápidas.',
-    images: [peitoFrangoImg, peitoFrangoImg],
-    category: 'aves',
-    packaging: 'Caixa: 12 kg, 8 a 10 peças por caixa',
-    featured: false,
-  },
-  {
-    id: '7',
-    name: 'Linguiça Toscana',
-    sku: 'ESP-001',
-    description: 'Linguiça toscana artesanal com temperos selecionados. Sabor marcante e autêntico.',
-    images: [linguicaImg],
-    category: 'especiais',
-    packaging: 'Caixa: 8 kg, aproximadamente 40 unidades',
-    featured: true,
-  },
-  {
-    id: '8',
-    name: 'Hambúrguer Artesanal',
-    sku: 'ESP-002',
-    description: 'Hambúrguer artesanal de carne bovina selecionada. Perfeito para lanches gourmet.',
-    images: [hamburguerImg, hamburguerImg],
-    category: 'especiais',
-    packaging: 'Caixa: 6 kg, 60 unidades de 100g',
-    featured: true,
-  },
-  {
-    id: '9',
-    name: 'Alcatra Bovina',
-    sku: 'BOV-004',
-    description: 'Alcatra de primeira, versátil e saborosa. Excelente custo-benefício.',
-    images: [alcatraImg],
-    category: 'bovinos',
-    packaging: 'Caixa: 18 kg a 20 kg, 10 a 12 peças por caixa',
-    featured: false,
-  },
-  {
-    id: '10',
-    name: 'Filé Mignon',
-    sku: 'BOV-005',
-    description: 'Filé mignon premium, o corte mais nobre e macio. Excelência garantida.',
-    images: [fileMignonImg, fileMignonImg, fileMignonImg],
-    category: 'bovinos',
-    packaging: 'Caixa: 8 kg a 10 kg, 12 a 15 peças por caixa',
-    featured: true,
-  },
-  {
-    id: '11',
-    name: 'Costelinha Suína',
-    sku: 'SUI-002',
-    description: 'Costelinha suína temperada, pronta para assar. Sabor incomparável.',
-    images: [costelinhaSuinaImg],
-    category: 'suinos',
-    packaging: 'Caixa: 12 kg, 8 a 10 peças por caixa',
-    featured: false,
-  },
-  {
-    id: '12',
-    name: 'Asa de Frango Congelada',
-    sku: 'AVE-003',
-    description: 'Asa de frango congelada de primeira qualidade. Perfeita para frituras e assados.',
-    images: [asaFrangoImg, asaFrangoImg],
-    category: 'aves',
-    packaging: 'Caixa: 15 kg, aproximadamente 80 peças',
-    featured: false,
-  },
-];
+// Mock Products - Gerados automaticamente de todas as imagens em /produtos/produto
+const MOCK_PRODUCTS: Product[] = generateProducts();
+
+// Log para debug
+console.log('📦 MOCK_PRODUCTS carregados:', MOCK_PRODUCTS.length, 'produtos');
 
 // Mock Admin Users
 const MOCK_ADMIN_USERS: AdminUser[] = [

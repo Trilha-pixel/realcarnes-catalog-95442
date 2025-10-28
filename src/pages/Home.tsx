@@ -20,6 +20,8 @@ import fastDeliveryImg from '@/assets/benefits/fast-delivery.jpg';
 
 const Home = () => {
   const { getProducts, categories, getBanners } = useMockData();
+  const allProducts = getProducts();
+  console.log('🏠 Home - Total produtos disponíveis:', allProducts.length);
   const featuredProducts = getProducts(undefined, true).slice(0, 6);
   const banners = getBanners();
 
