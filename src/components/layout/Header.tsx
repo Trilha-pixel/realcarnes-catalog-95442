@@ -50,7 +50,6 @@ export const Header = () => {
     { to: '/empresa', label: 'A empresa', icon: Building2 },
     { to: '/fornecedores', label: 'Fornecedores', icon: Users },
     { to: '/produtos', label: 'Produtos', icon: Package },
-    { to: '/receitas', label: 'Receitas', icon: ChefHat },
     { to: '/contato', label: 'Contato', icon: Mail },
   ];
 
@@ -100,18 +99,18 @@ export const Header = () => {
                 <img 
                   src={logoRoyalAlimentos} 
                   alt="Royal Alimentos" 
-                  className="h-20 w-auto object-contain"
+                  className="h-14 w-auto object-contain"
                 />
               </Link>
 
               {/* Navegação Central */}
-              <nav className="flex items-center gap-2">
+              <nav className="flex items-center gap-3">
                 {navLinks.map((link) => (
                   <Link
                     key={link.to}
                     to={link.to}
                     className={`
-                      px-5 py-2.5 pb-2 text-sm font-semibold transition-all duration-200
+                      px-6 py-3 pb-2 text-base font-semibold transition-all duration-200
                       relative group
                       ${isActivePath(link.to) 
                         ? 'text-primary' 
