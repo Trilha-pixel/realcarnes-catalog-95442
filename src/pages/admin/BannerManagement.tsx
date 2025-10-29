@@ -1,43 +1,45 @@
 import { useState } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
-import { useMockData, Banner } from '@/contexts/MockDataContext';
+import { useBanners, useCreateBanner, useUpdateBanner, useDeleteBanner } from '@/hooks/useBanners';
+import type { Banner } from '../../../shared/schema';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Edit, Trash2, GripVertical } from 'lucide-react';
+import { Plus, Edit, Trash2, GripVertical, Loader2 } from 'lucide-react';
 
 const BannerManagement = () => {
-  const { getBanners, createBanner, updateBanner, deleteBanner } = useMockData();
+  const { data: banners = [], isLoading } = useBanners(false); // Get all banners, not just active ones
+  const createBanner = useCreateBanner();
+  const updateBanner = useUpdateBanner();
+  const deleteBanner = useDeleteBanner();
   const { toast } = useToast();
   
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingBanner, setEditingBanner] = useState<Banner | null>(null);
   
   const [formData, setFormData] = useState({
-    imagem_desktop: '',
-    imagem_mobile: '',
-    link_url: '',
+    desktopImage: '',
+    mobileImage: '',
+    linkUrl: '',
   });
-
-  const banners = getBanners();
 
   const handleOpenDialog = (banner?: Banner) => {
     if (banner) {
       setEditingBanner(banner);
       setFormData({
-        imagem_desktop: banner.imagem_desktop,
-        imagem_mobile: banner.imagem_mobile,
-        link_url: banner.link_url,
+        desktopImage: banner.desktopImage,
+        mobileImage: banner.mobileImage,
+        linkUrl: banner.linkUrl || '',
       });
     } else {
       setEditingBanner(null);
       setFormData({
-        imagem_desktop: '',
-        imagem_mobile: '',
-        link_url: '',
+        desktopImage: '',
+        mobileImage: '',
+        linkUrl: '',
       });
     }
     setIsDialogOpen(true);
@@ -48,10 +50,10 @@ const BannerManagement = () => {
     setEditingBanner(null);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.imagem_desktop || !formData.link_url) {
+    if (!formData.desktopImage || !formData.linkUrl) {
       toast({
         variant: 'destructive',
         title: 'Erro',
@@ -60,38 +62,68 @@ const BannerManagement = () => {
       return;
     }
 
-    const bannerData = {
-      imagem_desktop: formData.imagem_desktop,
-      imagem_mobile: formData.imagem_mobile || formData.imagem_desktop,
-      link_url: formData.link_url,
+    const bannerData: any = {
+      desktopImage: formData.desktopImage,
+      mobileImage: formData.mobileImage || formData.desktopImage,
+      linkUrl: formData.linkUrl,
+      order: editingBanner?.order ?? banners.length,
+      active: true,
     };
 
-    if (editingBanner) {
-      updateBanner(editingBanner.id, bannerData);
+    try {
+      if (editingBanner) {
+        await updateBanner.mutateAsync({
+          id: editingBanner.id,
+          data: bannerData,
+        });
+        toast({
+          title: 'Banner atualizado!',
+          description: 'As alterações foram salvas com sucesso.',
+        });
+      } else {
+        await createBanner.mutateAsync(bannerData);
+        toast({
+          title: 'Banner criado!',
+          description: 'O novo banner foi adicionado.',
+        });
+      }
+      handleCloseDialog();
+    } catch (error) {
       toast({
-        title: 'Banner atualizado!',
-        description: 'As alterações foram salvas com sucesso.',
-      });
-    } else {
-      createBanner(bannerData);
-      toast({
-        title: 'Banner criado!',
-        description: 'O novo banner foi adicionado.',
+        variant: 'destructive',
+        title: 'Erro',
+        description: 'Ocorreu um erro ao salvar o banner.',
       });
     }
-
-    handleCloseDialog();
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = async (id: number) => {
     if (confirm('Tem certeza que deseja excluir este banner?')) {
-      deleteBanner(id);
-      toast({
-        title: 'Banner excluído',
-        description: 'O banner foi removido.',
-      });
+      try {
+        await deleteBanner.mutateAsync(id);
+        toast({
+          title: 'Banner excluído',
+          description: 'O banner foi removido.',
+        });
+      } catch (error) {
+        toast({
+          variant: 'destructive',
+          title: 'Erro',
+          description: 'Não foi possível excluir o banner.',
+        });
+      }
     }
   };
+
+  if (isLoading) {
+    return (
+      <AdminLayout>
+        <div className="flex items-center justify-center h-[60vh]">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      </AdminLayout>
+    );
+  }
 
   return (
     <AdminLayout>
@@ -137,13 +169,13 @@ const BannerManagement = () => {
                     </TableCell>
                     <TableCell>
                       <img
-                        src={banner.imagem_desktop}
+                        src={banner.desktopImage}
                         alt="Banner preview"
                         className="h-16 w-40 object-cover rounded"
                       />
                     </TableCell>
                     <TableCell className="text-muted-foreground">
-                      {banner.link_url}
+                      {banner.linkUrl || '(sem link)'}
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
@@ -158,6 +190,7 @@ const BannerManagement = () => {
                           variant="ghost"
                           size="icon"
                           onClick={() => handleDelete(banner.id)}
+                          disabled={deleteBanner.isPending}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -184,16 +217,16 @@ const BannerManagement = () => {
             <form onSubmit={handleSubmit}>
               <div className="space-y-4 py-4">
                 <div className="space-y-2">
-                  <Label htmlFor="imagem_desktop">URL da Imagem Desktop *</Label>
+                  <Label htmlFor="desktopImage">URL da Imagem Desktop *</Label>
                   <Input
-                    id="imagem_desktop"
-                    value={formData.imagem_desktop}
-                    onChange={(e) => setFormData({ ...formData, imagem_desktop: e.target.value })}
+                    id="desktopImage"
+                    value={formData.desktopImage}
+                    onChange={(e) => setFormData({ ...formData, desktopImage: e.target.value })}
                     placeholder="https://exemplo.com/banner-desktop.jpg"
                   />
-                  {formData.imagem_desktop && (
+                  {formData.desktopImage && (
                     <img
-                      src={formData.imagem_desktop}
+                      src={formData.desktopImage}
                       alt="Preview Desktop"
                       className="w-full h-32 object-cover rounded mt-2"
                       onError={(e) => {
@@ -204,19 +237,19 @@ const BannerManagement = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="imagem_mobile">URL da Imagem Mobile</Label>
+                  <Label htmlFor="mobileImage">URL da Imagem Mobile</Label>
                   <Input
-                    id="imagem_mobile"
-                    value={formData.imagem_mobile}
-                    onChange={(e) => setFormData({ ...formData, imagem_mobile: e.target.value })}
+                    id="mobileImage"
+                    value={formData.mobileImage}
+                    onChange={(e) => setFormData({ ...formData, mobileImage: e.target.value })}
                     placeholder="https://exemplo.com/banner-mobile.jpg (opcional)"
                   />
                   <p className="text-xs text-muted-foreground">
                     Se não informado, será usada a imagem desktop
                   </p>
-                  {formData.imagem_mobile && (
+                  {formData.mobileImage && (
                     <img
-                      src={formData.imagem_mobile}
+                      src={formData.mobileImage}
                       alt="Preview Mobile"
                       className="w-64 h-32 object-cover rounded mt-2"
                       onError={(e) => {
@@ -227,11 +260,11 @@ const BannerManagement = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="link_url">Link de Destino *</Label>
+                  <Label htmlFor="linkUrl">Link de Destino *</Label>
                   <Input
-                    id="link_url"
-                    value={formData.link_url}
-                    onChange={(e) => setFormData({ ...formData, link_url: e.target.value })}
+                    id="linkUrl"
+                    value={formData.linkUrl}
+                    onChange={(e) => setFormData({ ...formData, linkUrl: e.target.value })}
                     placeholder="/produtos ou /produto/123"
                   />
                 </div>
@@ -241,7 +274,10 @@ const BannerManagement = () => {
                 <Button type="button" variant="outline" onClick={handleCloseDialog}>
                   Cancelar
                 </Button>
-                <Button type="submit">
+                <Button type="submit" disabled={createBanner.isPending || updateBanner.isPending}>
+                  {(createBanner.isPending || updateBanner.isPending) && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
                   {editingBanner ? 'Salvar Alterações' : 'Criar Banner'}
                 </Button>
               </DialogFooter>
