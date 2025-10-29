@@ -251,6 +251,56 @@ export function registerRoutes(app: Express) {
   });
 
   // ==========================================
+  // PUBLIC AUTH ROUTES (Cliente Registration & Login)
+  // ==========================================
+  app.post("/api/auth/register", async (req, res) => {
+    try {
+      const { name, email, password, phone, company } = req.body;
+      
+      // Check if user already exists
+      const existingUser = await storage.getAdminUserByEmail(email);
+      if (existingUser) {
+        return res.status(409).json({ error: "Email já cadastrado" });
+      }
+      
+      // Create new client user
+      const validatedData = insertAdminUserSchema.parse({
+        name,
+        email,
+        password,
+        phone: phone || null,
+        company: company || null,
+        role: "cliente",
+      });
+      
+      const user = await storage.createAdminUser(validatedData);
+      const { password: _, ...userWithoutPassword } = user;
+      res.status(201).json(userWithoutPassword);
+    } catch (error) {
+      console.error("Error registering user:", error);
+      res.status(400).json({ error: "Erro ao criar cadastro" });
+    }
+  });
+
+  app.post("/api/auth/login", async (req, res) => {
+    try {
+      const { email, password } = req.body;
+      const user = await storage.getAdminUserByEmail(email);
+      
+      if (!user || user.password !== password) {
+        return res.status(401).json({ error: "Email ou senha incorretos" });
+      }
+      
+      // Remove password from response
+      const { password: _, ...userWithoutPassword } = user;
+      res.json(userWithoutPassword);
+    } catch (error) {
+      console.error("Error logging in:", error);
+      res.status(500).json({ error: "Erro ao fazer login" });
+    }
+  });
+
+  // ==========================================
   // BANNERS ROUTES
   // ==========================================
   app.get("/api/banners", async (req, res) => {
