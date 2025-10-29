@@ -1,0 +1,27 @@
+MockDataContext.tsx:529 Uncaught Error: useMockData must be used within a MockDataProvider
+    at useMockData (MockDataContext.tsx:529:11)
+    at QuoteList (QuoteList.tsx:30:7)
+
+MockDataContext.tsx:529 Uncaught Error: useMockData must be used within a MockDataProvider
+    at useMockData (MockDataContext.tsx:529:11)
+    at QuoteList (QuoteList.tsx:30:7)
+chunk-R6S4VRB5.js?v=8635e826:14032 The above error occurred in the <QuoteList> component:
+
+    at QuoteList (https://2fa0e476-36c2-4db5-b982-b477c1fc4849-00-3qzs7y9yul2gq.worf.replit.dev/src/pages/QuoteList.tsx:44:22)
+    at RenderedRoute (https://2fa0e476-36c2-4db5-b982-b477c1fc4849-00-3qzs7y9yul2gq.worf.replit.dev/node_modules/.vite/deps/react-router-dom.js?v=8635e826:4088:5)
+    at Routes (https://2fa0e476-36c2-4db5-b982-b477c1fc4849-00-3qzs7y9yul2gq.worf.replit.dev/node_modules/.vite/deps/react-router-dom.js?v=8635e826:4558:5)
+    at Router (https://2fa0e476-36c2-4db5-b982-b477c1fc4849-00-3qzs7y9yul2gq.worf.replit.dev/node_modules/.vite/deps/react-router-dom.js?v=8635e826:4501:15)
+    at BrowserRouter (https://2fa0e476-36c2-4db5-b982-b477c1fc4849-00-3qzs7y9yul2gq.worf.replit.dev/node_modules/.vite/deps/react-router-dom.js?v=8635e826:5247:5)
+    at Provider (https://2fa0e476-36c2-4db5-b982-b477c1fc4849-00-3qzs7y9yul2gq.worf.replit.dev/node_modules/.vite/deps/chunk-BKOR25MY.js?v=8635e826:38:15)
+    at TooltipProvider (https://2fa0e476-36c2-4db5-b982-b477c1fc4849-00-3qzs7y9yul2gq.worf.replit.dev/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=8635e826:60:5)
+    at CartProvider (https://2fa0e476-36c2-4db5-b982-b477c1fc4849-00-3qzs7y9yul2gq.worf.replit.dev/src/contexts/CartContext.tsx:25:32)
+    at AdminAuthProvider (https://2fa0e476-36c2-4db5-b982-b477c1fc4849-00-3qzs7y9yul2gq.worf.replit.dev/src/contexts/AdminAuthContext.tsx:24:37)
+    at AuthProvider (https://2fa0e476-36c2-4db5-b982-b477c1fc4849-00-3qzs7y9yul2gq.worf.replit.dev/src/contexts/AuthContext.tsx:43:32)
+    at QueryClientProvider (https://2fa0e476-36c2-4db5-b982-b477c1fc4849-00-3qzs7y9yul2gq.worf.replit.dev/node_modules/.vite/deps/@tanstack_react-query.js?v=8635e826:2934:3)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+chunk-R6S4VRB5.js?v=8635e826:19413 Uncaught Error: useMockData must be used within a MockDataProvider
+    at useMockData (MockDataContext.tsx:529:11)
+    at QuoteList (QuoteList.tsx:30:7)

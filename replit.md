@@ -226,7 +226,9 @@ These pages still use MockDataContext and need migration:
 - Products page (product listing)
 - Category page (filtered products)
 - ProductDetail page (single product view)
-- QuoteList page (cart/checkout)
 - ProductDiagnostics component
+
+### ✅ Recently Completed
+- ✅ QuoteList page (migrated to use CartContext and API mutations for quote submission)
 
 **Next Steps:** Migrate remaining public-facing pages to use API hooks instead of MockDataContext
