@@ -4,7 +4,7 @@ import cors from "cors";
 import { registerRoutes } from "./routes";
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001; // Backend API on port 5001 in dev
 
 // Middleware
 app.use(cors());

@@ -35,11 +35,12 @@ Preferred communication style: Simple, everyday language.
 
 **State Management**
 - React Context API for global state:
-  - `MockDataContext`: Manages all application data (products, categories, quotes, banners)
+  - `CartContext`: Manages quote cart state (shared across components, persisted in localStorage)
   - `AuthContext`: Handles customer authentication (mock implementation)
-  - `AdminAuthContext`: Manages admin user sessions
+  - `AdminAuthContext`: Manages admin user sessions via API
+  - `MockDataContext`: ⚠️ DEPRECATED - Still used by some pages, being phased out
+- TanStack Query (React Query): Manages server state, caching, and data fetching
 - Local component state with React hooks
-- TanStack Query (React Query) for data fetching setup (though currently using mock data)
 
 **Routing Structure**
 - Public routes: Home, Products, Categories, Product Details, Quote List, About, Contact, etc.
@@ -48,27 +49,31 @@ Preferred communication style: Simple, everyday language.
 
 ### Data Layer
 
-**Mock Data Strategy**
-The application currently uses a comprehensive mock data system instead of a real database. This architectural decision allows for rapid prototyping and can be easily replaced with real API calls:
+**Backend API & Database (PostgreSQL)** ✅ 
+The application now uses a complete backend with PostgreSQL database:
 
-- All CRUD operations are simulated in `MockDataContext`
-- Data persists in browser localStorage for quote cart and authentication
-- Products, categories, and banners are hardcoded with image imports
-- Quote requests generate unique IDs and store customer data
+- **Database**: PostgreSQL via Neon integration with Drizzle ORM
+- **Backend**: Express.js API server (port 5001)
+- **Frontend**: Vite dev server (port 5000) with proxy to backend API
+- **Schemas**: Defined in `shared/schema.ts` using Drizzle
+- **Tables**: categories, products, admin_users, banners, quote_requests, quote_items
+- **Storage Layer**: `server/storage.ts` with DatabaseStorage class
+- **API Routes**: RESTful endpoints in `server/routes.ts`
 
-**Data Models**
-- **Product**: id, name, sku, description, images[], category, packaging, featured flag
+**Data Models (Drizzle Schema)**
+- **Product**: id, sku, name, description, images[], categoryId, packaging, featured, status
 - **Category**: id, name, slug, icon, image
-- **QuoteRequest**: id, customerData (name, company, cnpj, email, phone), items[], status, createdAt
-- **Banner**: id, imagem_desktop, imagem_mobile, link_url, ordem
-- **AdminUser**: id, nome, email, nivel (Admin/Vendedor), senha_mock
+- **QuoteRequest**: id, customerName, customerCompany, customerCnpj, customerEmail, customerPhone, status, createdAt
+- **QuoteItem**: id, quoteRequestId, productId, productName, productSku, quantity
+- **Banner**: id, desktopImage, mobileImage, linkUrl, order, active
+- **AdminUser**: id, name, email, password, role (admin/vendedor)
 
-**Future Database Considerations**
-The architecture is designed to easily integrate a database (likely PostgreSQL with Drizzle ORM based on project patterns). Key integration points:
-- Replace MockDataContext methods with API calls
-- Add backend API routes for CRUD operations
-- Implement proper authentication with JWT or sessions
-- Add database migrations for schema management
+**Frontend Data Fetching**
+- **React Query (TanStack Query)**: Manages API data fetching and caching
+- **Custom Hooks**: `useCategories`, `useProducts`, `useBanners`, `useQuotes`, `useAdminUsers`
+- **CartContext**: Shared context for quote cart state (localStorage + React Context)
+- **API Client**: `src/lib/queryClient.ts` with `apiRequest` helper function
+- **Migration Status**: Home page migrated, remaining pages still use MockDataContext
 
 ### Authentication & Authorization
 
@@ -166,14 +171,52 @@ The `/admin` section provides complete content management:
 
 **Deployment & Hosting**
 - Configured for Replit hosting (.repl.co, .replit.dev domains)
-- Vite dev server on port 5000
+- Frontend: Vite dev server on port 5000
+- Backend: Express API server on port 5001
+- Vite proxy: `/api/*` requests forwarded to Express backend
 - HMR configured for Replit's proxy setup
 - Build outputs to `dist/` directory
+- Two workflows: "Start application" (Vite), "Backend API" (Express)
+
+**Database Details**
+- Provider: Neon (PostgreSQL cloud)
+- ORM: Drizzle with type-safe queries
+- Seeded Data: 6 categories, 6 products, 2 admin users, 2 banners, 1 sample quote
+- Admin Credentials: admin@royalalimentos.com.br / admin123, vendedor@royalalimentos.com.br / vendas123
+- Connection: Environment variables (DATABASE_URL, PGHOST, etc.)
 
 **Future Integration Points**
-Based on docs and architecture, likely future dependencies:
-- Database: PostgreSQL with Drizzle ORM
+Planned integrations:
 - Email service: For quote notifications (SendGrid, AWS SES, etc.)
 - File storage: For product image uploads (AWS S3, Cloudinary, etc.)
 - Analytics: User behavior tracking
 - Payment gateway: If transitioning from quotes to direct sales
+
+## Migration Progress (Mock → Real API)
+
+### ✅ Completed
+- Backend API with all REST endpoints
+- Database schema and seeded data
+- Custom React Query hooks for all resources
+- CartContext for shared cart state
+- Home page (uses API)
+- Header component (uses CartContext)
+- ProductCard component (uses CartContext)
+- AdminAuthContext (uses API login)
+- Vite proxy configuration
+
+### ⚠️ Pending Migration
+These pages still use MockDataContext and will crash until migrated:
+- Products page (product listing)
+- Category page (filtered products)
+- ProductDetail page (single product view)
+- QuoteList page (cart/checkout)
+- Admin Dashboard
+- Admin Product Management
+- Admin Category Management
+- Admin Banner Management
+- Admin User Management
+- Admin Quote Management
+- ProductDiagnostics component
+
+**Next Steps**: Migrate remaining pages to use API hooks instead of MockDataContext

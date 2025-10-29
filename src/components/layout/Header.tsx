@@ -1,7 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import { ShoppingCart, Menu, User, LogOut, Phone, MessageCircle, Home, Building2, Users, Package, ChefHat, Mail, Newspaper, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useMockData } from '@/contexts/MockDataContext';
+import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useState, useEffect } from 'react';
 import logoRoyalAlimentos from '@/assets/royal-logo-transparent.png';
@@ -15,9 +15,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export const Header = () => {
-  const { getQuoteCartCount } = useMockData();
+  const { getCartCount } = useCart();
   const { user, isAuthenticated, logout } = useAuth();
-  const cartCount = getQuoteCartCount();
+  const cartCount = getCartCount();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
