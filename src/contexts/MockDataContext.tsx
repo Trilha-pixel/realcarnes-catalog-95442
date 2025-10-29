@@ -88,14 +88,14 @@ const MOCK_ADMIN_USERS: AdminUser[] = [
   {
     id: 1,
     nome: 'Admin Master',
-    email: 'admin@realcarnes.com.br',
+    email: 'admin@royalalimentos.com.br',
     senha_mock: 'admin123',
     nivel: 'admin',
   },
   {
     id: 2,
     nome: 'Felipe Vendedor',
-    email: 'vendedor@realcarnes.com.br',
+    email: 'vendedor@royalalimentos.com.br',
     senha_mock: 'vendas123',
     nivel: 'vendedor',
   },
