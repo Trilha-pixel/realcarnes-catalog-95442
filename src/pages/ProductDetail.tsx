@@ -7,7 +7,7 @@ import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { useMockData } from '@/contexts/MockDataContext';
 import { toast } from 'sonner';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -17,6 +17,56 @@ const ProductDetail = () => {
   const product = getProductById(id || '');
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
+
+  // Scroll para mostrar a imagem do produto quando o ID muda
+  useEffect(() => {
+    // Função que rola a página
+    const scrollToProductImage = () => {
+      const imageSection = document.getElementById('product-image-section');
+      
+      if (imageSection) {
+        // Usa scrollIntoView para rolar até a imagem
+        imageSection.scrollIntoView({
+          behavior: 'instant',
+          block: 'start', // Alinha com o topo da viewport
+        });
+        
+        // Ajusta um pouco para baixo para dar espaço do header (80px)
+        window.scrollBy({
+          top: -80,
+          behavior: 'instant'
+        });
+      } else {
+        // Fallback: scroll para o topo
+        window.scrollTo({
+          top: 0,
+          left: 0,
+          behavior: 'instant'
+        });
+      }
+    };
+
+    // Executa imediatamente
+    scrollToProductImage();
+
+    // Usa requestAnimationFrame para garantir que o DOM está pronto
+    requestAnimationFrame(() => {
+      scrollToProductImage();
+    });
+
+    // Executa múltiplas vezes para garantir que funciona mesmo com imagens carregando
+    const timeouts = [
+      setTimeout(scrollToProductImage, 50),
+      setTimeout(scrollToProductImage, 100),
+      setTimeout(scrollToProductImage, 200),
+      setTimeout(scrollToProductImage, 300)
+    ];
+
+    // Cleanup
+    return () => {
+      timeouts.forEach(timeout => clearTimeout(timeout));
+    };
+  }, [id]);
 
   if (!product) {
     return (
@@ -71,7 +121,7 @@ const ProductDetail = () => {
           <div className="container px-4">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
               {/* Images */}
-              <div>
+              <div id="product-image-section">
                 <div className="aspect-square rounded-lg overflow-hidden bg-muted mb-4 shadow-medium">
                   <img
                     src={product.images[selectedImage]}

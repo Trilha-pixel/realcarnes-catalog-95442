@@ -33,9 +33,12 @@ const Products = () => {
     setCurrentPage(1);
   }, [selectedCategory, searchQuery]);
 
-  // Scroll to top when page changes
+  // Scroll to top when page changes (apenas dentro da mesma categoria)
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (currentPage > 1) {
+      // Scroll suave apenas para navegação de paginação
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }, [currentPage]);
 
   const allProducts = useMemo(() => {
