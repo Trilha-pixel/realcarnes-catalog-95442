@@ -50,7 +50,6 @@ export const Header = () => {
     { to: '/empresa', label: 'A empresa', icon: Building2 },
     { to: '/fornecedores', label: 'Fornecedores', icon: Users },
     { to: '/produtos', label: 'Produtos', icon: Package },
-    { to: '/receitas', label: 'Receitas', icon: ChefHat },
     { to: '/contato', label: 'Contato', icon: Mail },
   ];
 
@@ -100,32 +99,28 @@ export const Header = () => {
                 <img 
                   src={logoRoyalAlimentos} 
                   alt="Royal Alimentos" 
-                  className="h-20 w-auto object-contain"
+                  className="h-14 w-auto object-contain"
                 />
               </Link>
 
               {/* Navegação Central */}
-              <nav className="flex items-center gap-2">
+              <nav className="flex items-center gap-3">
                 {navLinks.map((link) => (
                   <Link
                     key={link.to}
                     to={link.to}
                     className={`
-                      px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200
+                      px-6 py-3 pb-2 text-base font-semibold transition-all duration-200
                       relative group
                       ${isActivePath(link.to) 
-                        ? 'text-primary bg-accent shadow-sm' 
-                        : 'text-foreground hover:text-primary hover:bg-accent/60'
+                        ? 'text-primary' 
+                        : 'text-foreground hover:text-primary'
                       }
                     `}
                   >
                     {link.label}
-                    {/* Underline animado no hover */}
-                    <span className={`
-                      absolute bottom-1 left-2 right-2 h-0.5 bg-primary rounded-full
-                      transform origin-left transition-transform duration-300
-                      ${isActivePath(link.to) ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'}
-                    `} />
+                    {/* Linha minimalista animada */}
+                    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-red-600 transition-all duration-300 group-hover:w-full"></span>
                   </Link>
                 ))}
               </nav>
@@ -196,46 +191,74 @@ export const Header = () => {
       {/* ============================ */}
       {/* VERSÃO MOBILE */}
       {/* ============================ */}
-      <header className={`lg:hidden sticky top-0 z-50 w-full bg-gradient-to-r from-destructive via-destructive to-destructive/95 transition-shadow duration-300 ${scrolled ? 'shadow-lg' : ''}`}>
-        <div className="container px-4">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo Mobile */}
-            <Link to="/" className="flex items-center hover:opacity-80 transition-opacity">
-              <img 
-                src={logoRoyalAlimentos} 
-                alt="Royal Alimentos" 
-                className="h-14 w-auto object-contain"
-              />
-            </Link>
-
-            {/* Ações Mobile */}
-            <div className="flex items-center gap-2">
-              {/* Carrinho Mobile */}
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                asChild 
-                className="relative text-destructive-foreground hover:text-white hover:bg-white/10"
+      <header className={`lg:hidden sticky top-0 z-50 w-full transition-shadow duration-300 ${scrolled ? 'shadow-lg' : ''}`}>
+        {/* Barra Superior - Vermelha com Contatos */}
+        <div className="bg-gradient-to-r from-destructive via-destructive to-destructive/95">
+          <div className="container px-4">
+            <div className="flex items-center justify-start gap-8 h-10 text-sm">
+              <a 
+                href="tel:+552126718074"
+                className="flex items-center gap-2 text-destructive-foreground hover:text-white transition-colors font-medium"
               >
-                <Link to="/orcamento">
-                  <ShoppingCart className="h-5 w-5" />
-                  {cartCount > 0 && (
-                    <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-white text-destructive text-xs flex items-center justify-center font-bold shadow-md animate-in zoom-in-50">
-                      {cartCount}
-                    </span>
-                  )}
-                </Link>
-              </Button>
+                <Phone className="h-4 w-4" />
+                (21) 2671-8074
+              </a>
 
-              {/* Botão Menu Hambúrguer */}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setMobileMenuOpen(true)}
-                className="text-destructive-foreground hover:text-white hover:bg-white/10"
+              <a 
+                href="https://wa.me/5521967188074" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-destructive-foreground hover:text-white transition-colors font-medium"
               >
-                <Menu className="h-6 w-6" />
-              </Button>
+                <MessageCircle className="h-4 w-4" />
+                Atendimento online
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {/* Barra Principal - Cinza com Logo e Ações */}
+        <div className="bg-muted/50 border-b">
+          <div className="container px-4">
+            <div className="flex items-center justify-between h-16">
+              {/* Logo Mobile */}
+              <Link to="/" className="flex items-center hover:opacity-80 transition-opacity">
+                <img 
+                  src={logoRoyalAlimentos} 
+                  alt="Royal Alimentos" 
+                  className="h-14 w-auto object-contain"
+                />
+              </Link>
+
+              {/* Ações Mobile */}
+              <div className="flex items-center gap-2">
+                {/* Carrinho Mobile */}
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  asChild 
+                  className="relative text-foreground hover:text-primary hover:bg-accent/60"
+                >
+                  <Link to="/orcamento">
+                    <ShoppingCart className="h-5 w-5" />
+                    {cartCount > 0 && (
+                      <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center font-bold shadow-md animate-in zoom-in-50">
+                        {cartCount}
+                      </span>
+                    )}
+                  </Link>
+                </Button>
+
+                {/* Botão Menu Hambúrguer */}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setMobileMenuOpen(true)}
+                  className="text-foreground hover:text-primary hover:bg-accent/60"
+                >
+                  <Menu className="h-6 w-6" />
+                </Button>
+              </div>
             </div>
           </div>
         </div>

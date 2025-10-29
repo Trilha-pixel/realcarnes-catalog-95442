@@ -124,14 +124,14 @@ const ProductManagement = () => {
   return (
     <AdminLayout>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold">Gerenciar Produtos</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold">Gerenciar Produtos</h1>
             <p className="text-muted-foreground mt-2">
               Adicione, edite ou remova produtos do catálogo
             </p>
           </div>
-          <Button onClick={() => handleOpenDialog()}>
+          <Button onClick={() => handleOpenDialog()} className="w-full sm:w-auto">
             <Plus className="mr-2 h-4 w-4" />
             Novo Produto
           </Button>
@@ -146,16 +146,16 @@ const ProductManagement = () => {
           />
         </div>
 
-        <div className="border rounded-lg">
+        <div className="border rounded-lg overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Imagem</TableHead>
-                <TableHead>Nome</TableHead>
-                <TableHead>SKU</TableHead>
-                <TableHead>Categoria</TableHead>
-                <TableHead>Destaque</TableHead>
-                <TableHead className="text-right">Ações</TableHead>
+                <TableHead className="min-w-[60px]">Imagem</TableHead>
+                <TableHead className="min-w-[150px]">Nome</TableHead>
+                <TableHead className="min-w-[100px] hidden sm:table-cell">SKU</TableHead>
+                <TableHead className="min-w-[120px] hidden md:table-cell">Categoria</TableHead>
+                <TableHead className="min-w-[80px] hidden lg:table-cell">Destaque</TableHead>
+                <TableHead className="text-right min-w-[100px]">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -172,34 +172,41 @@ const ProductManagement = () => {
                       <img
                         src={product.images[0]}
                         alt={product.name}
-                        className="w-12 h-12 object-cover rounded"
+                        className="w-10 h-10 sm:w-12 sm:h-12 object-cover rounded"
                       />
                     </TableCell>
-                    <TableCell className="font-medium">{product.name}</TableCell>
-                    <TableCell>{product.sku}</TableCell>
-                    <TableCell>
+                    <TableCell className="font-medium">
+                      <div>
+                        <div className="font-medium">{product.name}</div>
+                        <div className="text-xs text-muted-foreground sm:hidden">{product.sku}</div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="hidden sm:table-cell">{product.sku}</TableCell>
+                    <TableCell className="hidden md:table-cell">
                       <Badge variant="outline">
                         {categories.find(c => c.slug === product.category)?.name || product.category}
                       </Badge>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="hidden lg:table-cell">
                       {product.featured && <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />}
                     </TableCell>
                     <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
+                      <div className="flex justify-end gap-1 sm:gap-2">
                         <Button
                           variant="ghost"
                           size="icon"
                           onClick={() => handleOpenDialog(product)}
+                          className="h-8 w-8 sm:h-10 sm:w-10"
                         >
-                          <Edit className="h-4 w-4" />
+                          <Edit className="h-3 w-3 sm:h-4 sm:w-4" />
                         </Button>
                         <Button
                           variant="ghost"
                           size="icon"
                           onClick={() => handleDelete(product.id)}
+                          className="h-8 w-8 sm:h-10 sm:w-10"
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
                         </Button>
                       </div>
                     </TableCell>
@@ -212,7 +219,7 @@ const ProductManagement = () => {
 
         {/* Product Form Dialog */}
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto mx-4">
             <DialogHeader>
               <DialogTitle>
                 {editingProduct ? 'Editar Produto' : 'Novo Produto'}
@@ -223,7 +230,7 @@ const ProductManagement = () => {
             </DialogHeader>
             <form onSubmit={handleSubmit}>
               <div className="space-y-4 py-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="name">Nome *</Label>
                     <Input
