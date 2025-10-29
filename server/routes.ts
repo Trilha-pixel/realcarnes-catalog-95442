@@ -325,7 +325,16 @@ export function registerRoutes(app: Express) {
       if (req.query.status) filters.status = req.query.status as string;
 
       const quotes = await storage.getQuoteRequests(filters);
-      res.json(quotes);
+      
+      // Include items for each quote
+      const quotesWithItems = await Promise.all(
+        quotes.map(async (quote) => {
+          const items = await storage.getQuoteItemsByRequestId(quote.id);
+          return { ...quote, items };
+        })
+      );
+      
+      res.json(quotesWithItems);
     } catch (error) {
       console.error("Error fetching quote requests:", error);
       res.status(500).json({ error: "Failed to fetch quote requests" });
