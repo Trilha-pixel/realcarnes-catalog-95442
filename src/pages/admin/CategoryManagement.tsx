@@ -158,6 +158,7 @@ const CategoryManagement = () => {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead>Imagem</TableHead>
                 <TableHead>Ícone</TableHead>
                 <TableHead>Nome</TableHead>
                 <TableHead>Slug</TableHead>
@@ -167,13 +168,26 @@ const CategoryManagement = () => {
             <TableBody>
               {categories.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={4} className="text-center text-muted-foreground">
+                  <TableCell colSpan={5} className="text-center text-muted-foreground">
                     Nenhuma categoria encontrada
                   </TableCell>
                 </TableRow>
               ) : (
                 categories.map((category) => (
                   <TableRow key={category.id}>
+                    <TableCell>
+                      {category.image ? (
+                        <img 
+                          src={category.image} 
+                          alt={category.name} 
+                          className="w-16 h-16 object-cover rounded"
+                        />
+                      ) : (
+                        <div className="w-16 h-16 bg-muted rounded flex items-center justify-center text-xs text-muted-foreground">
+                          Sem imagem
+                        </div>
+                      )}
+                    </TableCell>
                     <TableCell className="text-2xl">{category.icon}</TableCell>
                     <TableCell className="font-medium">{category.name}</TableCell>
                     <TableCell className="text-muted-foreground">{category.slug}</TableCell>
@@ -205,7 +219,7 @@ const CategoryManagement = () => {
 
         {/* Category Form Dialog */}
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogContent>
+          <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>
                 {editingCategory ? 'Editar Categoria' : 'Nova Categoria'}
@@ -216,6 +230,23 @@ const CategoryManagement = () => {
             </DialogHeader>
             <form onSubmit={handleSubmit}>
               <div className="space-y-4 py-4">
+                {/* Preview da Imagem */}
+                {formData.image && (
+                  <div className="space-y-2">
+                    <Label>Preview da Imagem</Label>
+                    <div className="border rounded-lg p-4 bg-muted/30">
+                      <img 
+                        src={formData.image} 
+                        alt="Preview" 
+                        className="w-full h-48 object-cover rounded"
+                        onError={(e) => {
+                          e.currentTarget.src = '';
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
+                    </div>
+                  </div>
+                )}
                 <div className="space-y-2">
                   <Label htmlFor="name">Nome *</Label>
                   <Input
@@ -257,13 +288,24 @@ const CategoryManagement = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="image">URL da Imagem</Label>
+                  <Label htmlFor="image">URL da Imagem *</Label>
                   <Input
                     id="image"
                     value={formData.image}
                     onChange={(e) => setFormData({ ...formData, image: e.target.value })}
                     placeholder="https://exemplo.com/imagem.jpg"
                   />
+                  <p className="text-xs text-muted-foreground">
+                    Cole aqui a URL completa da imagem (deve começar com https://)
+                  </p>
+                  <div className="text-xs text-muted-foreground bg-muted/30 p-3 rounded border">
+                    <p className="font-semibold mb-1">💡 Dica: Onde obter URLs de imagens</p>
+                    <ul className="space-y-1 ml-4 list-disc">
+                      <li>Imagens do Google: Clique com botão direito → "Copiar endereço da imagem"</li>
+                      <li>Unsplash: Use imagens gratuitas de alta qualidade</li>
+                      <li>ImgBB: Faça upload e copie o link direto</li>
+                    </ul>
+                  </div>
                 </div>
               </div>
 
