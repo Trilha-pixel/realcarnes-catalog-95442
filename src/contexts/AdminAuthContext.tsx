@@ -39,7 +39,7 @@ export const AdminAuthProvider = ({ children }: { children: ReactNode }) => {
         return false;
       }
 
-      const { user } = await response.json();
+      const user = await response.json();
       
       setAdminUser(user);
       localStorage.setItem('admin_user', JSON.stringify(user));
