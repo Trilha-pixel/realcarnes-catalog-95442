@@ -89,13 +89,29 @@ The application now uses a complete backend with PostgreSQL database:
 - Admin layout wrapper checking auth status
 - Logout functionality clearing session
 
-**Security Notes**
-Current implementation is mock-only. Production requires:
-- Secure password hashing
-- JWT or session-based auth
-- HTTPS enforcement
-- CSRF protection
-- Rate limiting
+**Authentication System (Updated - Using PostgreSQL)**
+- **Public Authentication**: 
+  - Customer registration via `/api/auth/register` endpoint
+  - Customer login via `/api/auth/login` endpoint
+  - Passwords stored plain (⚠️ needs hashing for production)
+  - Auto-login after registration
+  - Session persistence via localStorage
+- **Admin Authentication**: 
+  - Admin login via `/api/admin/login` endpoint
+  - Role-based access control
+- **User Roles in Database**: 
+  - `admin`: Full system access (create products, manage users, etc.)
+  - `vendedor`: Sales team with quote management access
+  - `cliente`: Public customers registered through the site
+- **Database Storage**: All users (admin, vendedor, cliente) stored in `admin_users` table with fields: id, name, email, password, role, phone, company, createdAt
+
+**Security Notes for Production**
+Current implementation needs improvements for production:
+- ❌ Passwords stored in plain text - need bcrypt/argon2 hashing
+- ❌ No JWT or session tokens - need proper session management
+- ❌ No HTTPS enforcement
+- ❌ No CSRF protection
+- ❌ No rate limiting on auth endpoints
 
 ### Admin Panel (CMS)
 
