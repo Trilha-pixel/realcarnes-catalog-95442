@@ -5,16 +5,23 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
-import { useMockData } from '@/contexts/MockDataContext';
+import { useProducts } from '@/hooks/useProducts';
+import { useCategories } from '@/hooks/useCategories';
+import { useCart } from '@/contexts/CartContext';
 import { toast } from 'sonner';
 import { useState, useEffect } from 'react';
 
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { getProductById, addToQuoteCart, getCategoryBySlug, getProducts } = useMockData();
+  const { data: products = [], isLoading: productsLoading } = useProducts();
+  const { data: categories = [], isLoading: categoriesLoading } = useCategories();
+  const { addToCart } = useCart();
   
-  const product = getProductById(id || '');
+  const product = products.find(p => p.id === parseInt(id || '0'));
+  const category = categories.find(c => c.id === product?.categoryId);
+  const relatedProducts = products.filter(p => p.categoryId === product?.categoryId && p.id !== product?.id).slice(0, 4);
+  
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
 
@@ -68,6 +75,18 @@ const ProductDetail = () => {
     };
   }, [id]);
 
+  if (productsLoading || categoriesLoading) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-1 flex items-center justify-center">
+          <p className="text-xl text-muted-foreground">Carregando...</p>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
   if (!product) {
     return (
       <div className="min-h-screen flex flex-col">
@@ -85,11 +104,8 @@ const ProductDetail = () => {
     );
   }
 
-  const category = getCategoryBySlug(product.category);
-  const relatedProducts = getProducts(product.category).filter(p => p.id !== product.id).slice(0, 4);
-
   const handleAddToCart = () => {
-    addToQuoteCart(product, quantity);
+    addToCart(product, quantity);
     toast.success('Produto adicionado à lista de orçamento!', {
       description: `${quantity}x ${product.name}`,
       action: {
