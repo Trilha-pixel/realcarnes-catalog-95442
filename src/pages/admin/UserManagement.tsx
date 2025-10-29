@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
-import { useMockData, AdminUser } from '@/contexts/MockDataContext';
+import { useAdminUsers, useCreateAdminUser, useUpdateAdminUser, useDeleteAdminUser } from '@/hooks/useAdminUsers';
+import type { AdminUser } from '../../../shared/schema';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -9,40 +10,41 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Edit, Trash2 } from 'lucide-react';
+import { Plus, Edit, Trash2, Loader2 } from 'lucide-react';
 
 const UserManagement = () => {
-  const { getAdminUsers, createAdminUser, updateAdminUser, deleteAdminUser } = useMockData();
+  const { data: users = [], isLoading } = useAdminUsers();
+  const createAdminUser = useCreateAdminUser();
+  const updateAdminUser = useUpdateAdminUser();
+  const deleteAdminUser = useDeleteAdminUser();
   const { toast } = useToast();
   
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<AdminUser | null>(null);
   
   const [formData, setFormData] = useState({
-    nome: '',
+    name: '',
     email: '',
-    senha_mock: '',
-    nivel: 'vendedor' as 'admin' | 'vendedor',
+    password: '',
+    role: 'vendedor' as 'admin' | 'vendedor',
   });
-
-  const users = getAdminUsers();
 
   const handleOpenDialog = (user?: AdminUser) => {
     if (user) {
       setEditingUser(user);
       setFormData({
-        nome: user.nome,
+        name: user.name,
         email: user.email,
-        senha_mock: '',
-        nivel: user.nivel,
+        password: '',
+        role: user.role as 'admin' | 'vendedor',
       });
     } else {
       setEditingUser(null);
       setFormData({
-        nome: '',
+        name: '',
         email: '',
-        senha_mock: '',
-        nivel: 'vendedor',
+        password: '',
+        role: 'vendedor',
       });
     }
     setIsDialogOpen(true);
@@ -53,10 +55,10 @@ const UserManagement = () => {
     setEditingUser(null);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.nome || !formData.email) {
+    if (!formData.name || !formData.email) {
       toast({
         variant: 'destructive',
         title: 'Erro',
@@ -65,7 +67,7 @@ const UserManagement = () => {
       return;
     }
 
-    if (!editingUser && !formData.senha_mock) {
+    if (!editingUser && !formData.password) {
       toast({
         variant: 'destructive',
         title: 'Erro',
@@ -75,41 +77,69 @@ const UserManagement = () => {
     }
 
     const userData: any = {
-      nome: formData.nome,
+      name: formData.name,
       email: formData.email,
-      nivel: formData.nivel,
+      role: formData.role,
     };
 
-    if (formData.senha_mock) {
-      userData.senha_mock = formData.senha_mock;
+    if (formData.password) {
+      userData.password = formData.password;
     }
 
-    if (editingUser) {
-      updateAdminUser(editingUser.id, userData);
+    try {
+      if (editingUser) {
+        await updateAdminUser.mutateAsync({
+          id: editingUser.id,
+          data: userData,
+        });
+        toast({
+          title: 'Usuário atualizado!',
+          description: 'As alterações foram salvas com sucesso.',
+        });
+      } else {
+        await createAdminUser.mutateAsync(userData);
+        toast({
+          title: 'Usuário criado!',
+          description: 'O novo usuário foi adicionado.',
+        });
+      }
+      handleCloseDialog();
+    } catch (error) {
       toast({
-        title: 'Usuário atualizado!',
-        description: 'As alterações foram salvas com sucesso.',
-      });
-    } else {
-      createAdminUser(userData);
-      toast({
-        title: 'Usuário criado!',
-        description: 'O novo usuário foi adicionado.',
+        variant: 'destructive',
+        title: 'Erro',
+        description: 'Ocorreu um erro ao salvar o usuário.',
       });
     }
-
-    handleCloseDialog();
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = async (id: number) => {
     if (confirm('Tem certeza que deseja excluir este usuário?')) {
-      deleteAdminUser(id);
-      toast({
-        title: 'Usuário excluído',
-        description: 'O usuário foi removido.',
-      });
+      try {
+        await deleteAdminUser.mutateAsync(id);
+        toast({
+          title: 'Usuário excluído',
+          description: 'O usuário foi removido.',
+        });
+      } catch (error) {
+        toast({
+          variant: 'destructive',
+          title: 'Erro',
+          description: 'Não foi possível excluir o usuário.',
+        });
+      }
     }
   };
+
+  if (isLoading) {
+    return (
+      <AdminLayout>
+        <div className="flex items-center justify-center h-[60vh]">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      </AdminLayout>
+    );
+  }
 
   return (
     <AdminLayout>
@@ -147,11 +177,11 @@ const UserManagement = () => {
               ) : (
                 users.map((user) => (
                   <TableRow key={user.id}>
-                    <TableCell className="font-medium">{user.nome}</TableCell>
+                    <TableCell className="font-medium">{user.name}</TableCell>
                     <TableCell>{user.email}</TableCell>
                     <TableCell>
-                      <Badge variant={user.nivel === 'admin' ? 'default' : 'secondary'}>
-                        {user.nivel === 'admin' ? 'Administrador' : 'Vendedor'}
+                      <Badge variant={user.role === 'admin' ? 'default' : 'secondary'}>
+                        {user.role === 'admin' ? 'Administrador' : 'Vendedor'}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
@@ -167,6 +197,7 @@ const UserManagement = () => {
                           variant="ghost"
                           size="icon"
                           onClick={() => handleDelete(user.id)}
+                          disabled={deleteAdminUser.isPending}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -193,11 +224,11 @@ const UserManagement = () => {
             <form onSubmit={handleSubmit}>
               <div className="space-y-4 py-4">
                 <div className="space-y-2">
-                  <Label htmlFor="nome">Nome *</Label>
+                  <Label htmlFor="name">Nome *</Label>
                   <Input
-                    id="nome"
-                    value={formData.nome}
-                    onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
+                    id="name"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     placeholder="Nome completo"
                   />
                 </div>
@@ -209,26 +240,26 @@ const UserManagement = () => {
                     type="email"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    placeholder="usuario@realcarnes.com.br"
+                    placeholder="usuario@royalalimentos.com.br"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="senha">Senha {!editingUser && '*'}</Label>
+                  <Label htmlFor="password">Senha {!editingUser && '*'}</Label>
                   <Input
-                    id="senha"
+                    id="password"
                     type="password"
-                    value={formData.senha_mock}
-                    onChange={(e) => setFormData({ ...formData, senha_mock: e.target.value })}
+                    value={formData.password}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                     placeholder={editingUser ? 'Deixe em branco para manter' : 'Digite a senha'}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="nivel">Nível de Acesso *</Label>
+                  <Label htmlFor="role">Nível de Acesso *</Label>
                   <Select
-                    value={formData.nivel}
-                    onValueChange={(value) => setFormData({ ...formData, nivel: value as 'admin' | 'vendedor' })}
+                    value={formData.role}
+                    onValueChange={(value) => setFormData({ ...formData, role: value as 'admin' | 'vendedor' })}
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -245,7 +276,10 @@ const UserManagement = () => {
                 <Button type="button" variant="outline" onClick={handleCloseDialog}>
                   Cancelar
                 </Button>
-                <Button type="submit">
+                <Button type="submit" disabled={createAdminUser.isPending || updateAdminUser.isPending}>
+                  {(createAdminUser.isPending || updateAdminUser.isPending) && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
                   {editingUser ? 'Salvar Alterações' : 'Criar Usuário'}
                 </Button>
               </DialogFooter>
