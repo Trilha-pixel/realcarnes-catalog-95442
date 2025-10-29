@@ -22,7 +22,7 @@ const AdminLogin = () => {
     }
   }, [isAdminAuthenticated, navigate]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!email || !password) {
@@ -34,7 +34,7 @@ const AdminLogin = () => {
       return;
     }
 
-    const success = adminLogin(email, password);
+    const success = await adminLogin(email, password);
     
     if (success) {
       toast({
@@ -70,7 +70,7 @@ const AdminLogin = () => {
               <Input
                 id="email"
                 type="email"
-                placeholder="admin@realcarnes.com.br"
+                placeholder="admin@royalalimentos.com.br"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 autoComplete="email"
@@ -89,8 +89,8 @@ const AdminLogin = () => {
             </div>
             <div className="text-sm text-muted-foreground bg-muted p-3 rounded-md">
               <p className="font-medium mb-1">Credenciais de teste:</p>
-              <p className="text-xs">Admin: admin@realcarnes.com.br / admin123</p>
-              <p className="text-xs">Vendedor: vendedor@realcarnes.com.br / vendas123</p>
+              <p className="text-xs">Admin: admin@royalalimentos.com.br / admin123</p>
+              <p className="text-xs">Vendedor: vendedor@royalalimentos.com.br / vendas123</p>
             </div>
             <Button type="submit" className="w-full">
               Entrar no Painel
