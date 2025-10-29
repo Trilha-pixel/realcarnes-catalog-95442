@@ -8,9 +8,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
-import { useMockData } from '@/contexts/MockDataContext';
+import { useCart } from '@/contexts/CartContext';
 import { toast } from 'sonner';
 import { z } from 'zod';
+import { useMutation } from '@tanstack/react-query';
+import { apiRequest } from '@/lib/queryClient';
 
 const customerSchema = z.object({
   name: z.string().trim().min(1, 'Nome é obrigatório').max(100, 'Nome muito longo'),
@@ -23,11 +25,11 @@ const customerSchema = z.object({
 const QuoteList = () => {
   const navigate = useNavigate();
   const { 
-    quoteCart, 
-    removeFromQuoteCart, 
-    updateQuoteCartQuantity,
-    submitQuoteRequest 
-  } = useMockData();
+    cart, 
+    removeFromCart, 
+    updateQuantity,
+    clearCart
+  } = useCart();
 
   const [customerData, setCustomerData] = useState({
     name: '',
@@ -39,29 +41,51 @@ const QuoteList = () => {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  const submitQuoteMutation = useMutation({
+    mutationFn: async (data: typeof customerData) => {
+      const response = await apiRequest('/api/quotes', {
+        method: 'POST',
+        body: JSON.stringify({
+          customerName: data.name,
+          customerCompany: data.company,
+          customerCnpj: data.cnpj,
+          customerEmail: data.email,
+          customerPhone: data.phone,
+          status: 'novo',
+          items: cart.map(item => ({
+            productId: item.product.id,
+            productName: item.product.name,
+            productSku: item.product.sku,
+            quantity: item.quantity,
+          })),
+        }),
+      });
+      return response;
+    },
+    onSuccess: (data) => {
+      clearCart();
+      toast.success('Orçamento solicitado com sucesso!', {
+        description: `Número do pedido: ${data.id}`,
+      });
+      navigate('/orcamento/sucesso', { state: { quoteId: data.id } });
+    },
+    onError: () => {
+      toast.error('Erro ao enviar orçamento. Tente novamente.');
+    },
+  });
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (quoteCart.length === 0) {
+    if (cart.length === 0) {
       toast.error('Adicione produtos à lista antes de solicitar orçamento');
       return;
     }
 
     try {
       customerSchema.parse(customerData);
-      const quote = submitQuoteRequest({
-        name: customerData.name,
-        company: customerData.company,
-        cnpj: customerData.cnpj,
-        email: customerData.email,
-        phone: customerData.phone,
-      });
-      
-      toast.success('Orçamento solicitado com sucesso!', {
-        description: `Número do pedido: ${quote.id}`,
-      });
-      
-      navigate('/orcamento/sucesso', { state: { quoteId: quote.id } });
+      setErrors({});
+      submitQuoteMutation.mutate(customerData);
     } catch (error) {
       if (error instanceof z.ZodError) {
         const newErrors: Record<string, string> = {};
@@ -103,7 +127,7 @@ const QuoteList = () => {
     return value;
   };
 
-  const totalItems = quoteCart.reduce((sum, item) => sum + item.quantity, 0);
+  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -120,7 +144,7 @@ const QuoteList = () => {
 
           <h1 className="text-4xl font-bold mb-8">Lista de Orçamento</h1>
 
-          {quoteCart.length === 0 ? (
+          {cart.length === 0 ? (
             <Card className="text-center py-12">
               <CardContent>
                 <p className="text-xl text-muted-foreground mb-6">
@@ -142,7 +166,7 @@ const QuoteList = () => {
                     <CardTitle>Produtos Selecionados ({totalItems} {totalItems === 1 ? 'item' : 'itens'})</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    {quoteCart.map((item, index) => (
+                    {cart.map((item, index) => (
                       <div key={item.product.id}>
                         {index > 0 && <Separator />}
                         <div className="flex gap-4 py-4">
@@ -177,7 +201,7 @@ const QuoteList = () => {
                               <Button
                                 variant="ghost"
                                 size="icon"
-                                onClick={() => updateQuoteCartQuantity(item.product.id, item.quantity - 1)}
+                                onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
                                 className="h-8 w-8"
                               >
                                 <Minus className="h-3 w-3" />
@@ -188,7 +212,7 @@ const QuoteList = () => {
                               <Button
                                 variant="ghost"
                                 size="icon"
-                                onClick={() => updateQuoteCartQuantity(item.product.id, item.quantity + 1)}
+                                onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
                                 className="h-8 w-8"
                               >
                                 <Plus className="h-3 w-3" />
@@ -199,7 +223,7 @@ const QuoteList = () => {
                               variant="ghost"
                               size="sm"
                               onClick={() => {
-                                removeFromQuoteCart(item.product.id);
+                                removeFromCart(item.product.id);
                                 toast.info('Produto removido da lista');
                               }}
                               className="text-destructive hover:text-destructive"
@@ -303,9 +327,11 @@ const QuoteList = () => {
                         type="submit" 
                         size="lg" 
                         className="w-full bg-primary hover:bg-primary-hover"
+                        disabled={submitQuoteMutation.isPending}
+                        data-testid="button-submit-quote"
                       >
                         <Send className="h-5 w-5 mr-2" />
-                        Solicitar Orçamento
+                        {submitQuoteMutation.isPending ? 'Enviando...' : 'Solicitar Orçamento'}
                       </Button>
                     </form>
                   </CardContent>
