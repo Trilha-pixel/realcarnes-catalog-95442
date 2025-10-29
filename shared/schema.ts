@@ -61,14 +61,16 @@ export type InsertProduct = z.infer<typeof insertProductSchema>;
 export type Product = typeof products.$inferSelect;
 
 // ==========================================
-// USUÁRIOS ADMIN
+// USUÁRIOS (Admin, Vendedor e Clientes)
 // ==========================================
 export const adminUsers = pgTable("admin_users", {
   id: serial("id").primaryKey(),
   name: varchar("name", { length: 255 }).notNull(),
   email: varchar("email", { length: 255 }).notNull().unique(),
   password: varchar("password", { length: 255 }).notNull(),
-  role: varchar("role", { length: 50 }).notNull().default("vendedor"), // admin ou vendedor
+  role: varchar("role", { length: 50 }).notNull().default("cliente"), // admin, vendedor ou cliente
+  phone: varchar("phone", { length: 20 }),
+  company: varchar("company", { length: 255 }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
