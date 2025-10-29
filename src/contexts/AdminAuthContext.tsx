@@ -1,10 +1,10 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { useMockData, AdminUser } from './MockDataContext';
+import type { AdminUser } from '../../shared/schema';
 
 interface AdminAuthContextType {
   adminUser: AdminUser | null;
   isAdminAuthenticated: boolean;
-  adminLogin: (email: string, password: string) => boolean;
+  adminLogin: (email: string, password: string) => Promise<boolean>;
   adminLogout: () => void;
 }
 
@@ -12,7 +12,6 @@ const AdminAuthContext = createContext<AdminAuthContextType | undefined>(undefin
 
 export const AdminAuthProvider = ({ children }: { children: ReactNode }) => {
   const [adminUser, setAdminUser] = useState<AdminUser | null>(null);
-  const { authenticateAdmin } = useMockData();
 
   useEffect(() => {
     const storedAdmin = localStorage.getItem('admin_user');
@@ -21,16 +20,29 @@ export const AdminAuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
-  const adminLogin = (email: string, password: string): boolean => {
-    const user = authenticateAdmin(email, password);
-    
-    if (user) {
-      const { senha_mock, ...userWithoutPassword } = user;
-      setAdminUser(userWithoutPassword as AdminUser);
-      localStorage.setItem('admin_user', JSON.stringify(userWithoutPassword));
+  const adminLogin = async (email: string, password: string): Promise<boolean> => {
+    try {
+      const response = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) {
+        return false;
+      }
+
+      const { user } = await response.json();
+      
+      setAdminUser(user);
+      localStorage.setItem('admin_user', JSON.stringify(user));
       return true;
+    } catch (error) {
+      console.error('Admin login error:', error);
+      return false;
     }
-    return false;
   };
 
   const adminLogout = () => {
