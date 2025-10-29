@@ -6,16 +6,18 @@ import { Button } from '@/components/ui/button';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { ProductCard } from '@/components/product/ProductCard';
-import { useMockData } from '@/contexts/MockDataContext';
+import { useProducts } from '@/hooks/useProducts';
+import { useCategories } from '@/hooks/useCategories';
 
 const Category = () => {
   const { slug } = useParams<{ slug: string }>();
-  const { getProducts, getCategoryBySlug } = useMockData();
+  const { data: products = [], isLoading: productsLoading } = useProducts();
+  const { data: categories = [], isLoading: categoriesLoading } = useCategories();
   
   const [searchQuery, setSearchQuery] = useState('');
 
-  const category = getCategoryBySlug(slug || '');
-  const categoryProducts = getProducts(slug);
+  const category = categories.find(c => c.slug === slug);
+  const categoryProducts = products.filter(p => p.categoryId === category?.id);
 
   const filteredProducts = useMemo(() => {
     if (!searchQuery) return categoryProducts;
@@ -26,6 +28,18 @@ const Category = () => {
       p.description.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [searchQuery, categoryProducts]);
+
+  if (productsLoading || categoriesLoading) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-1 flex items-center justify-center">
+          <p className="text-xl text-muted-foreground">Carregando...</p>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   if (!category) {
     return (

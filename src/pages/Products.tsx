@@ -8,14 +8,15 @@ import { Badge } from "@/components/ui/badge";
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { ProductCard } from '@/components/product/ProductCard';
-import { ProductDiagnostics } from '@/components/ProductDiagnostics';
-import { useMockData } from '@/contexts/MockDataContext';
+import { useProducts } from '@/hooks/useProducts';
+import { useCategories } from '@/hooks/useCategories';
 
 const ITEMS_PER_PAGE = 24;
 
 const Products = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { getProducts, categories, searchProducts } = useMockData();
+  const { data: products = [], isLoading: productsLoading } = useProducts();
+  const { data: categories = [], isLoading: categoriesLoading } = useCategories();
   
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('categoria') || 'all');
@@ -42,14 +43,21 @@ const Products = () => {
   }, [currentPage]);
 
   const allProducts = useMemo(() => {
-    return searchQuery ? searchProducts(searchQuery) : getProducts();
-  }, [searchQuery, getProducts, searchProducts]);
+    if (!searchQuery) return products;
+    
+    const query = searchQuery.toLowerCase();
+    return products.filter(p =>
+      p.name.toLowerCase().includes(query) ||
+      p.sku.toLowerCase().includes(query) ||
+      p.description.toLowerCase().includes(query)
+    );
+  }, [searchQuery, products]);
 
   // Count products by category
   const productCounts = useMemo(() => {
     const counts: Record<string, number> = { all: allProducts.length };
     categories.forEach(cat => {
-      counts[cat.slug] = allProducts.filter(p => p.category === cat.slug).length;
+      counts[cat.slug] = allProducts.filter(p => p.categoryId === cat.id).length;
     });
     return counts;
   }, [allProducts, categories]);
@@ -58,8 +66,9 @@ const Products = () => {
     if (selectedCategory === 'all') {
       return allProducts;
     }
-    return allProducts.filter(p => p.category === selectedCategory);
-  }, [allProducts, selectedCategory]);
+    const category = categories.find(c => c.slug === selectedCategory);
+    return allProducts.filter(p => p.categoryId === category?.id);
+  }, [allProducts, selectedCategory, categories]);
 
   // Pagination
   const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
@@ -79,9 +88,20 @@ const Products = () => {
 
   const activeCategory = categories.find(c => c.slug === selectedCategory);
 
+  if (productsLoading || categoriesLoading) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-1 flex items-center justify-center">
+          <p className="text-xl text-muted-foreground">Carregando produtos...</p>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex flex-col">
-      <ProductDiagnostics />
       <Header />
       
       <main className="flex-1">
