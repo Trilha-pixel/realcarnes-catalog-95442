@@ -1,16 +1,20 @@
 import { useState } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
-import { useMockData, Category } from '@/contexts/MockDataContext';
+import { useCategories, useCreateCategory, useUpdateCategory, useDeleteCategory } from '@/hooks/useCategories';
+import type { Category } from '../../../shared/schema';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Edit, Trash2 } from 'lucide-react';
+import { Plus, Edit, Trash2, Loader2 } from 'lucide-react';
 
 const CategoryManagement = () => {
-  const { getCategories, createCategory, updateCategory, deleteCategory } = useMockData();
+  const { data: categories = [], isLoading } = useCategories();
+  const createCategory = useCreateCategory();
+  const updateCategory = useUpdateCategory();
+  const deleteCategory = useDeleteCategory();
   const { toast } = useToast();
   
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -23,16 +27,14 @@ const CategoryManagement = () => {
     image: '',
   });
 
-  const categories = getCategories();
-
   const handleOpenDialog = (category?: Category) => {
     if (category) {
       setEditingCategory(category);
       setFormData({
         name: category.name,
         slug: category.slug,
-        icon: category.icon,
-        image: category.image,
+        icon: category.icon || '',
+        image: category.image || '',
       });
     } else {
       setEditingCategory(null);
@@ -60,7 +62,7 @@ const CategoryManagement = () => {
       .replace(/(^-|-$)/g, '');
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!formData.name) {
@@ -74,39 +76,67 @@ const CategoryManagement = () => {
 
     const slug = formData.slug || generateSlug(formData.name);
 
-    const categoryData = {
+    const categoryData: any = {
       name: formData.name,
       slug,
       icon: formData.icon,
       image: formData.image,
     };
 
-    if (editingCategory) {
-      updateCategory(editingCategory.id, categoryData);
+    try {
+      if (editingCategory) {
+        await updateCategory.mutateAsync({
+          id: editingCategory.id,
+          data: categoryData,
+        });
+        toast({
+          title: 'Categoria atualizada!',
+          description: 'As alterações foram salvas com sucesso.',
+        });
+      } else {
+        await createCategory.mutateAsync(categoryData);
+        toast({
+          title: 'Categoria criada!',
+          description: 'A nova categoria foi adicionada.',
+        });
+      }
+      handleCloseDialog();
+    } catch (error) {
       toast({
-        title: 'Categoria atualizada!',
-        description: 'As alterações foram salvas com sucesso.',
-      });
-    } else {
-      createCategory(categoryData);
-      toast({
-        title: 'Categoria criada!',
-        description: 'A nova categoria foi adicionada.',
+        variant: 'destructive',
+        title: 'Erro',
+        description: 'Ocorreu um erro ao salvar a categoria.',
       });
     }
-
-    handleCloseDialog();
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: number) => {
     if (confirm('Tem certeza que deseja excluir esta categoria?')) {
-      deleteCategory(id);
-      toast({
-        title: 'Categoria excluída',
-        description: 'A categoria foi removida.',
-      });
+      try {
+        await deleteCategory.mutateAsync(id);
+        toast({
+          title: 'Categoria excluída',
+          description: 'A categoria foi removida.',
+        });
+      } catch (error) {
+        toast({
+          variant: 'destructive',
+          title: 'Erro',
+          description: 'Não foi possível excluir a categoria.',
+        });
+      }
     }
   };
+
+  if (isLoading) {
+    return (
+      <AdminLayout>
+        <div className="flex items-center justify-center h-[60vh]">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      </AdminLayout>
+    );
+  }
 
   return (
     <AdminLayout>
@@ -160,6 +190,7 @@ const CategoryManagement = () => {
                           variant="ghost"
                           size="icon"
                           onClick={() => handleDelete(category.id)}
+                          disabled={deleteCategory.isPending}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -240,7 +271,10 @@ const CategoryManagement = () => {
                 <Button type="button" variant="outline" onClick={handleCloseDialog}>
                   Cancelar
                 </Button>
-                <Button type="submit">
+                <Button type="submit" disabled={createCategory.isPending || updateCategory.isPending}>
+                  {(createCategory.isPending || updateCategory.isPending) && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
                   {editingCategory ? 'Salvar Alterações' : 'Criar Categoria'}
                 </Button>
               </DialogFooter>
