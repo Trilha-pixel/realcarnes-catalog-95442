@@ -43,7 +43,7 @@ const QuoteList = () => {
 
   const submitQuoteMutation = useMutation({
     mutationFn: async (data: typeof customerData) => {
-      const response = await apiRequest('/api/quotes', {
+      const response = await apiRequest('/quotes', {
         method: 'POST',
         body: JSON.stringify({
           customerName: data.name,
