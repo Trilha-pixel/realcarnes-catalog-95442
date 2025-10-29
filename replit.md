@@ -202,7 +202,11 @@ Planned integrations:
 - Home page (uses API)
 - Header component (uses CartContext)
 - ProductCard component (uses CartContext)
-- AdminAuthContext (uses API login)
+- AdminAuthContext (uses API login with async/await fix)
+- AdminLogin (async authentication with redirect)
+- AdminLayout (updated to use API schema fields: name, role)
+- Admin Dashboard (migrated to use useProducts, useCategories, useQuoteRequests)
+- Quote API endpoint (returns items array for each quote)
 - Vite proxy configuration
 
 ### ⚠️ Pending Migration

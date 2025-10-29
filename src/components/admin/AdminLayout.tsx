@@ -97,10 +97,10 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
         
         <div className="p-4">
           <div className="mb-3 px-3 py-2 bg-muted rounded-md">
-            <p className="text-sm font-medium">{adminUser?.nome}</p>
+            <p className="text-sm font-medium">{adminUser?.name}</p>
             <p className="text-xs text-muted-foreground">{adminUser?.email}</p>
             <p className="text-xs text-muted-foreground capitalize mt-1">
-              Nível: {adminUser?.nivel}
+              Nível: {adminUser?.role}
             </p>
           </div>
           <Button
@@ -157,10 +157,10 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
               
               <div className="space-y-4">
                 <div className="px-3 py-2 bg-muted rounded-md">
-                  <p className="text-sm font-medium">{adminUser?.nome}</p>
+                  <p className="text-sm font-medium">{adminUser?.name}</p>
                   <p className="text-xs text-muted-foreground">{adminUser?.email}</p>
                   <p className="text-xs text-muted-foreground capitalize mt-1">
-                    Nível: {adminUser?.nivel}
+                    Nível: {adminUser?.role}
                   </p>
                 </div>
                 <Button
