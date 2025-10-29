@@ -16,7 +16,10 @@ Preferred communication style: Simple, everyday language.
 
 **Framework & Build System**
 - React 18.3+ with TypeScript for type safety
-- Vite as the build tool and dev server, configured for Replit hosting (ports 5000, .repl.co and .replit.dev hosts)
+- Vite as the build tool and dev server, configured for Replit hosting:
+  - Port 5000 (host: 0.0.0.0)
+  - allowedHosts: true (permits all Replit domains: .replit.dev, .repl.co)
+  - HMR configured for Replit proxy (wss:// protocol on port 443)
 - React Router for client-side routing with separate routes for public pages and admin panel
 - Component-based architecture with clear separation between layout, UI, and feature components
 
@@ -26,6 +29,8 @@ Preferred communication style: Simple, everyday language.
 - **Color Palette**: Navy Blue (#1E3A5F / HSL 223 58% 26%) as primary, Vivid Red (#F50000 / HSL 0 85% 50%) as secondary/accent
 - Custom design tokens defined in index.css following brand guidelines
 - **Typography**: Montserrat (bold, 700-900 weight) for headings, Roboto (300-700 weight) for body text
+- **Header Design**: Gray background (bg-muted/50) with transparent Royal Alimentos logo, red contact bar above
+- **Promotional Banners**: Custom promotional images for homepage carousel (OFERTÃO DA CARNE, OFERTA DA SEMANA)
 - Professional, corporate design reflecting the frozen and refrigerated food distribution business
 
 **State Management**
