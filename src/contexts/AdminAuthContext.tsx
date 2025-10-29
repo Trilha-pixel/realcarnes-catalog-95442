@@ -15,8 +15,13 @@ export const AdminAuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const storedAdmin = localStorage.getItem('admin_user');
-    if (storedAdmin) {
-      setAdminUser(JSON.parse(storedAdmin));
+    if (storedAdmin && storedAdmin !== 'undefined' && storedAdmin !== 'null') {
+      try {
+        setAdminUser(JSON.parse(storedAdmin));
+      } catch (error) {
+        console.error('Failed to parse admin user from localStorage:', error);
+        localStorage.removeItem('admin_user');
+      }
     }
   }, []);
 
