@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
-import { useMockData, Product } from '@/contexts/MockDataContext';
+import { useProducts, useCreateProduct, useUpdateProduct, useDeleteProduct } from '@/hooks/useProducts';
+import { useCategories } from '@/hooks/useCategories';
+import type { Product } from '../../../shared/schema';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -11,10 +13,14 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Edit, Trash2, Star } from 'lucide-react';
+import { Plus, Edit, Trash2, Star, Loader2 } from 'lucide-react';
 
 const ProductManagement = () => {
-  const { getProducts, getCategories, createProduct, updateProduct, deleteProduct } = useMockData();
+  const { data: products = [], isLoading: isLoadingProducts } = useProducts();
+  const { data: categories = [], isLoading: isLoadingCategories } = useCategories();
+  const createProduct = useCreateProduct();
+  const updateProduct = useUpdateProduct();
+  const deleteProduct = useDeleteProduct();
   const { toast } = useToast();
   
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -27,13 +33,11 @@ const ProductManagement = () => {
     sku: '',
     description: '',
     packaging: '',
-    category: '',
+    categoryId: '',
     featured: false,
     imageUrl: '',
+    status: 'active' as 'active' | 'inactive',
   });
-
-  const products = getProducts();
-  const categories = getCategories();
   
   const filteredProducts = products.filter(p =>
     p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -46,11 +50,12 @@ const ProductManagement = () => {
       setFormData({
         name: product.name,
         sku: product.sku,
-        description: product.description,
-        packaging: product.packaging,
-        category: product.category,
+        description: product.description || '',
+        packaging: product.packaging || '',
+        categoryId: product.categoryId.toString(),
         featured: product.featured,
         imageUrl: product.images[0] || '',
+        status: (product.status || 'active') as 'active' | 'inactive',
       });
     } else {
       setEditingProduct(null);
@@ -59,9 +64,10 @@ const ProductManagement = () => {
         sku: '',
         description: '',
         packaging: '',
-        category: '',
+        categoryId: '',
         featured: false,
         imageUrl: '',
+        status: 'active' as 'active' | 'inactive',
       });
     }
     setIsDialogOpen(true);
@@ -72,10 +78,10 @@ const ProductManagement = () => {
     setEditingProduct(null);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.name || !formData.sku || !formData.category) {
+    if (!formData.name || !formData.sku || !formData.categoryId) {
       toast({
         variant: 'destructive',
         title: 'Erro',
@@ -84,42 +90,71 @@ const ProductManagement = () => {
       return;
     }
 
-    const productData = {
+    const productData: any = {
       name: formData.name,
       sku: formData.sku,
       description: formData.description,
       packaging: formData.packaging,
-      category: formData.category,
+      categoryId: parseInt(formData.categoryId),
       featured: formData.featured,
       images: formData.imageUrl ? [formData.imageUrl] : [],
+      status: formData.status as 'active' | 'inactive',
     };
 
-    if (editingProduct) {
-      updateProduct(editingProduct.id, productData);
+    try {
+      if (editingProduct) {
+        await updateProduct.mutateAsync({
+          id: editingProduct.id,
+          data: productData,
+        });
+        toast({
+          title: 'Produto atualizado!',
+          description: 'As alterações foram salvas com sucesso.',
+        });
+      } else {
+        await createProduct.mutateAsync(productData);
+        toast({
+          title: 'Produto criado!',
+          description: 'O novo produto foi adicionado ao catálogo.',
+        });
+      }
+      handleCloseDialog();
+    } catch (error) {
       toast({
-        title: 'Produto atualizado!',
-        description: 'As alterações foram salvas com sucesso.',
-      });
-    } else {
-      createProduct(productData);
-      toast({
-        title: 'Produto criado!',
-        description: 'O novo produto foi adicionado ao catálogo.',
+        variant: 'destructive',
+        title: 'Erro',
+        description: 'Ocorreu um erro ao salvar o produto.',
       });
     }
-
-    handleCloseDialog();
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: number) => {
     if (confirm('Tem certeza que deseja excluir este produto?')) {
-      deleteProduct(id);
-      toast({
-        title: 'Produto excluído',
-        description: 'O produto foi removido do catálogo.',
-      });
+      try {
+        await deleteProduct.mutateAsync(id);
+        toast({
+          title: 'Produto excluído',
+          description: 'O produto foi removido do catálogo.',
+        });
+      } catch (error) {
+        toast({
+          variant: 'destructive',
+          title: 'Erro',
+          description: 'Não foi possível excluir o produto.',
+        });
+      }
     }
   };
+
+  if (isLoadingProducts || isLoadingCategories) {
+    return (
+      <AdminLayout>
+        <div className="flex items-center justify-center h-[60vh]">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      </AdminLayout>
+    );
+  }
 
   return (
     <AdminLayout>
@@ -184,7 +219,7 @@ const ProductManagement = () => {
                     <TableCell className="hidden sm:table-cell">{product.sku}</TableCell>
                     <TableCell className="hidden md:table-cell">
                       <Badge variant="outline">
-                        {categories.find(c => c.slug === product.category)?.name || product.category}
+                        {categories.find(c => c.id === product.categoryId)?.name || 'Sem categoria'}
                       </Badge>
                     </TableCell>
                     <TableCell className="hidden lg:table-cell">
@@ -205,6 +240,7 @@ const ProductManagement = () => {
                           size="icon"
                           onClick={() => handleDelete(product.id)}
                           className="h-8 w-8 sm:h-10 sm:w-10"
+                          disabled={deleteProduct.isPending}
                         >
                           <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
                         </Button>
@@ -275,15 +311,15 @@ const ProductManagement = () => {
                 <div className="space-y-2">
                   <Label htmlFor="category">Categoria *</Label>
                   <Select
-                    value={formData.category}
-                    onValueChange={(value) => setFormData({ ...formData, category: value })}
+                    value={formData.categoryId}
+                    onValueChange={(value) => setFormData({ ...formData, categoryId: value })}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Selecione uma categoria" />
                     </SelectTrigger>
                     <SelectContent>
                       {categories.map((cat) => (
-                        <SelectItem key={cat.id} value={cat.slug}>
+                        <SelectItem key={cat.id} value={cat.id.toString()}>
                           {cat.icon} {cat.name}
                         </SelectItem>
                       ))}
@@ -329,7 +365,10 @@ const ProductManagement = () => {
                 <Button type="button" variant="outline" onClick={handleCloseDialog}>
                   Cancelar
                 </Button>
-                <Button type="submit">
+                <Button type="submit" disabled={createProduct.isPending || updateProduct.isPending}>
+                  {(createProduct.isPending || updateProduct.isPending) && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
                   {editingProduct ? 'Salvar Alterações' : 'Criar Produto'}
                 </Button>
               </DialogFooter>
