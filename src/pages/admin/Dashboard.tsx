@@ -1,21 +1,23 @@
 import AdminLayout from '@/components/admin/AdminLayout';
-import { useMockData } from '@/contexts/MockDataContext';
+import { useProducts } from '@/hooks/useProducts';
+import { useCategories } from '@/hooks/useCategories';
+import { useQuoteRequests } from '@/hooks/useQuotes';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
-import { FileText, Package, FolderTree, AlertCircle } from 'lucide-react';
+import { FileText, Package, FolderTree, AlertCircle, Loader2 } from 'lucide-react';
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { getProducts, getCategories, getQuoteRequests } = useMockData();
+  const { data: products = [], isLoading: isLoadingProducts } = useProducts();
+  const { data: categories = [], isLoading: isLoadingCategories } = useCategories();
+  const { data: quoteRequests = [], isLoading: isLoadingQuotes } = useQuoteRequests();
   
-  const products = getProducts();
-  const categories = getCategories();
-  const quoteRequests = getQuoteRequests();
   const newQuotes = quoteRequests.filter(q => q.status === 'novo');
   const latestQuotes = quoteRequests.slice(0, 5);
+  const isLoading = isLoadingProducts || isLoadingCategories || isLoadingQuotes;
 
   const stats = [
     {
@@ -51,13 +53,13 @@ const Dashboard = () => {
   const getStatusBadge = (status: string) => {
     const variants: Record<string, 'default' | 'secondary' | 'destructive'> = {
       'novo': 'destructive',
-      'em-atendimento': 'default',
+      'em_atendimento': 'default',
       'finalizado': 'secondary',
     };
     
     const labels: Record<string, string> = {
       'novo': 'Novo',
-      'em-atendimento': 'Em Atendimento',
+      'em_atendimento': 'Em Atendimento',
       'finalizado': 'Finalizado',
     };
     
@@ -68,13 +70,23 @@ const Dashboard = () => {
     );
   };
 
+  if (isLoading) {
+    return (
+      <AdminLayout>
+        <div className="flex items-center justify-center h-[60vh]">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      </AdminLayout>
+    );
+  }
+
   return (
     <AdminLayout>
       <div className="space-y-8">
         <div>
           <h1 className="text-3xl font-bold">Dashboard</h1>
           <p className="text-muted-foreground mt-2">
-            Visão geral do sistema Real Carnes
+            Visão geral do sistema Royal Alimentos
           </p>
         </div>
 
@@ -139,9 +151,9 @@ const Dashboard = () => {
                         onClick={() => navigate(`/admin/solicitacoes/${quote.id}`)}
                       >
                         <TableCell className="font-medium">{quote.id}</TableCell>
-                        <TableCell>{new Date(quote.date).toLocaleDateString('pt-BR')}</TableCell>
-                        <TableCell className="font-medium">{quote.customer.name}</TableCell>
-                        <TableCell className="hidden sm:table-cell">{quote.customer.company}</TableCell>
+                        <TableCell>{new Date(quote.createdAt).toLocaleDateString('pt-BR')}</TableCell>
+                        <TableCell className="font-medium">{quote.customerName}</TableCell>
+                        <TableCell className="hidden sm:table-cell">{quote.customerCompany}</TableCell>
                         <TableCell>{getStatusBadge(quote.status)}</TableCell>
                         <TableCell className="hidden md:table-cell">{quote.items.length} produto(s)</TableCell>
                       </TableRow>
