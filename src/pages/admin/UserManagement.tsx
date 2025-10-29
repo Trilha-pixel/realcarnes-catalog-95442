@@ -26,8 +26,12 @@ const UserManagement = () => {
     name: '',
     email: '',
     password: '',
-    role: 'vendedor' as 'admin' | 'vendedor',
+    role: 'vendedor' as 'admin' | 'vendedor' | 'cliente',
+    phone: '',
+    company: '',
   });
+
+  const [roleFilter, setRoleFilter] = useState<'all' | 'admin' | 'vendedor' | 'cliente'>('all');
 
   const handleOpenDialog = (user?: AdminUser) => {
     if (user) {
@@ -36,7 +40,9 @@ const UserManagement = () => {
         name: user.name,
         email: user.email,
         password: '',
-        role: user.role as 'admin' | 'vendedor',
+        role: user.role as 'admin' | 'vendedor' | 'cliente',
+        phone: user.phone || '',
+        company: user.company || '',
       });
     } else {
       setEditingUser(null);
@@ -45,6 +51,8 @@ const UserManagement = () => {
         email: '',
         password: '',
         role: 'vendedor',
+        phone: '',
+        company: '',
       });
     }
     setIsDialogOpen(true);
@@ -80,6 +88,8 @@ const UserManagement = () => {
       name: formData.name,
       email: formData.email,
       role: formData.role,
+      phone: formData.phone || null,
+      company: formData.company || null,
     };
 
     if (formData.password) {
@@ -146,14 +156,41 @@ const UserManagement = () => {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">Gerenciar Usuários Admin</h1>
+            <h1 className="text-3xl font-bold">Gerenciar Usuários</h1>
             <p className="text-muted-foreground mt-2">
-              Gerencie os usuários com acesso ao painel administrativo
+              Administradores, vendedores e clientes cadastrados no sistema
             </p>
           </div>
           <Button onClick={() => handleOpenDialog()}>
             <Plus className="mr-2 h-4 w-4" />
             Novo Usuário
+          </Button>
+        </div>
+
+        <div className="flex gap-2">
+          <Button 
+            variant={roleFilter === 'all' ? 'default' : 'outline'}
+            onClick={() => setRoleFilter('all')}
+          >
+            Todos ({users.length})
+          </Button>
+          <Button 
+            variant={roleFilter === 'admin' ? 'default' : 'outline'}
+            onClick={() => setRoleFilter('admin')}
+          >
+            Admins ({users.filter(u => u.role === 'admin').length})
+          </Button>
+          <Button 
+            variant={roleFilter === 'vendedor' ? 'default' : 'outline'}
+            onClick={() => setRoleFilter('vendedor')}
+          >
+            Vendedores ({users.filter(u => u.role === 'vendedor').length})
+          </Button>
+          <Button 
+            variant={roleFilter === 'cliente' ? 'default' : 'outline'}
+            onClick={() => setRoleFilter('cliente')}
+          >
+            Clientes ({users.filter(u => u.role === 'cliente').length})
           </Button>
         </div>
 
@@ -163,25 +200,35 @@ const UserManagement = () => {
               <TableRow>
                 <TableHead>Nome</TableHead>
                 <TableHead>Email</TableHead>
-                <TableHead>Nível</TableHead>
+                <TableHead>Telefone/Empresa</TableHead>
+                <TableHead>Tipo</TableHead>
                 <TableHead className="text-right">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {users.length === 0 ? (
+              {users.filter(u => roleFilter === 'all' || u.role === roleFilter).length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={4} className="text-center text-muted-foreground">
+                  <TableCell colSpan={5} className="text-center text-muted-foreground">
                     Nenhum usuário encontrado
                   </TableCell>
                 </TableRow>
               ) : (
-                users.map((user) => (
+                users.filter(u => roleFilter === 'all' || u.role === roleFilter).map((user) => (
                   <TableRow key={user.id}>
                     <TableCell className="font-medium">{user.name}</TableCell>
                     <TableCell>{user.email}</TableCell>
+                    <TableCell className="text-sm text-muted-foreground">
+                      {user.phone && <div>{user.phone}</div>}
+                      {user.company && <div>{user.company}</div>}
+                      {!user.phone && !user.company && <span className="text-muted-foreground/50">-</span>}
+                    </TableCell>
                     <TableCell>
-                      <Badge variant={user.role === 'admin' ? 'default' : 'secondary'}>
-                        {user.role === 'admin' ? 'Administrador' : 'Vendedor'}
+                      <Badge variant={
+                        user.role === 'admin' ? 'default' : 
+                        user.role === 'vendedor' ? 'secondary' : 
+                        'outline'
+                      }>
+                        {user.role === 'admin' ? 'Admin' : user.role === 'vendedor' ? 'Vendedor' : 'Cliente'}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
@@ -256,10 +303,10 @@ const UserManagement = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="role">Nível de Acesso *</Label>
+                  <Label htmlFor="role">Tipo de Usuário *</Label>
                   <Select
                     value={formData.role}
-                    onValueChange={(value) => setFormData({ ...formData, role: value as 'admin' | 'vendedor' })}
+                    onValueChange={(value) => setFormData({ ...formData, role: value as 'admin' | 'vendedor' | 'cliente' })}
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -267,8 +314,31 @@ const UserManagement = () => {
                     <SelectContent>
                       <SelectItem value="admin">Administrador</SelectItem>
                       <SelectItem value="vendedor">Vendedor</SelectItem>
+                      <SelectItem value="cliente">Cliente</SelectItem>
                     </SelectContent>
                   </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="phone">Telefone</Label>
+                  <Input
+                    id="phone"
+                    type="tel"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    placeholder="(11) 98765-4321"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="company">Empresa</Label>
+                  <Input
+                    id="company"
+                    type="text"
+                    value={formData.company}
+                    onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                    placeholder="Nome da empresa"
+                  />
                 </div>
               </div>
 
