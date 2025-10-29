@@ -25,7 +25,7 @@ const Login = () => {
   const [registerPhone, setRegisterPhone] = useState('');
   const [registerCompany, setRegisterCompany] = useState('');
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!loginEmail || !loginPassword) {
@@ -37,7 +37,7 @@ const Login = () => {
       return;
     }
 
-    const success = login(loginEmail, loginPassword);
+    const success = await login(loginEmail, loginPassword);
     
     if (success) {
       toast({
@@ -54,7 +54,7 @@ const Login = () => {
     }
   };
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!registerName || !registerEmail || !registerPassword) {
@@ -75,7 +75,7 @@ const Login = () => {
       return;
     }
 
-    const success = register(registerName, registerEmail, registerPassword, registerPhone, registerCompany);
+    const success = await register(registerName, registerEmail, registerPassword, registerPhone, registerCompany);
     
     if (success) {
       toast({
@@ -139,11 +139,6 @@ const Login = () => {
                       value={loginPassword}
                       onChange={(e) => setLoginPassword(e.target.value)}
                     />
-                  </div>
-                  <div className="text-sm text-muted-foreground">
-                    <p>Usuários de teste:</p>
-                    <p className="text-xs mt-1">joao@example.com / 123456</p>
-                    <p className="text-xs">maria@example.com / 123456</p>
                   </div>
                 </CardContent>
                 <CardFooter>

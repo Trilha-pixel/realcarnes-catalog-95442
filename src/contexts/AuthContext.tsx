@@ -1,100 +1,78 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { apiRequest } from '@/lib/queryClient';
 
 interface User {
-  id: string;
+  id: number;
   name: string;
   email: string;
-  phone?: string;
-  company?: string;
+  phone?: string | null;
+  company?: string | null;
+  role: string;
 }
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
-  login: (email: string, password: string) => boolean;
-  register: (name: string, email: string, password: string, phone?: string, company?: string) => boolean;
+  login: (email: string, password: string) => Promise<boolean>;
+  register: (name: string, email: string, password: string, phone?: string, company?: string) => Promise<boolean>;
   logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Mock users database
-const MOCK_USERS: Array<User & { password: string }> = [
-  {
-    id: '1',
-    name: 'João Silva',
-    email: 'joao@example.com',
-    password: '123456',
-    phone: '(11) 98765-4321',
-    company: 'Restaurante do João',
-  },
-  {
-    id: '2',
-    name: 'Maria Santos',
-    email: 'maria@example.com',
-    password: '123456',
-    phone: '(11) 99876-5432',
-    company: 'Churrascaria Maria',
-  },
-];
-
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [registeredUsers, setRegisteredUsers] = useState(MOCK_USERS);
 
   useEffect(() => {
     // Load user from localStorage on mount
     const storedUser = localStorage.getItem('auth_user');
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-
-    // Load registered users from localStorage
-    const storedRegisteredUsers = localStorage.getItem('registered_users');
-    if (storedRegisteredUsers) {
-      setRegisteredUsers(JSON.parse(storedRegisteredUsers));
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (error) {
+        console.error('Failed to parse stored user:', error);
+        localStorage.removeItem('auth_user');
+      }
     }
   }, []);
 
-  const login = (email: string, password: string): boolean => {
-    const foundUser = registeredUsers.find(
-      u => u.email.toLowerCase() === email.toLowerCase() && u.password === password
-    );
+  const login = async (email: string, password: string): Promise<boolean> => {
+    try {
+      const response = await apiRequest('/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({ email, password }),
+      });
 
-    if (foundUser) {
-      const { password: _, ...userWithoutPassword } = foundUser;
-      setUser(userWithoutPassword);
-      localStorage.setItem('auth_user', JSON.stringify(userWithoutPassword));
+      setUser(response);
+      localStorage.setItem('auth_user', JSON.stringify(response));
       return true;
-    }
-    return false;
-  };
-
-  const register = (name: string, email: string, password: string, phone?: string, company?: string): boolean => {
-    // Check if email already exists
-    if (registeredUsers.some(u => u.email.toLowerCase() === email.toLowerCase())) {
+    } catch (error) {
+      console.error('Login failed:', error);
       return false;
     }
+  };
 
-    const newUser = {
-      id: `user_${Date.now()}`,
-      name,
-      email,
-      password,
-      phone,
-      company,
-    };
+  const register = async (
+    name: string,
+    email: string,
+    password: string,
+    phone?: string,
+    company?: string
+  ): Promise<boolean> => {
+    try {
+      const response = await apiRequest('/auth/register', {
+        method: 'POST',
+        body: JSON.stringify({ name, email, password, phone, company }),
+      });
 
-    const updatedUsers = [...registeredUsers, newUser];
-    setRegisteredUsers(updatedUsers);
-    localStorage.setItem('registered_users', JSON.stringify(updatedUsers));
-
-    // Auto login after registration
-    const { password: _, ...userWithoutPassword } = newUser;
-    setUser(userWithoutPassword);
-    localStorage.setItem('auth_user', JSON.stringify(userWithoutPassword));
-
-    return true;
+      // Auto login after registration
+      setUser(response);
+      localStorage.setItem('auth_user', JSON.stringify(response));
+      return true;
+    } catch (error) {
+      console.error('Registration failed:', error);
+      return false;
+    }
   };
 
   const logout = () => {
