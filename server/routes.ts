@@ -484,10 +484,9 @@ export function registerRoutes(app: Express) {
       // Tentar múltiplos caminhos possíveis
       const possiblePaths = [
         path.join(process.cwd(), 'database-export.json'),
-        path.join(__dirname, '..', 'database-export.json'),
-        path.join(__dirname, 'database-export.json'),
         '/home/runner/workspace/database-export.json',
         './database-export.json',
+        'database-export.json',
       ];
       
       let exportFilePath: string | null = null;
@@ -507,7 +506,7 @@ export function registerRoutes(app: Express) {
           error: 'Arquivo database-export.json não encontrado no deployment.',
           hint: 'Certifique-se de que o arquivo está commitado no Git e incluído no deployment.',
           cwd: process.cwd(),
-          dirname: __dirname,
+          testedPaths: possiblePaths,
         });
       }
       
