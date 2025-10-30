@@ -479,17 +479,40 @@ export function registerRoutes(app: Express) {
       const path = await import('path');
       
       console.log('📥 Starting data import...');
+      console.log('Current directory:', process.cwd());
       
-      // Ler arquivo JSON exportado
-      const exportFilePath = path.join(process.cwd(), 'database-export.json');
+      // Tentar múltiplos caminhos possíveis
+      const possiblePaths = [
+        path.join(process.cwd(), 'database-export.json'),
+        path.join(__dirname, '..', 'database-export.json'),
+        path.join(__dirname, 'database-export.json'),
+        '/home/runner/workspace/database-export.json',
+        './database-export.json',
+      ];
       
-      if (!fs.existsSync(exportFilePath)) {
+      let exportFilePath: string | null = null;
+      for (const filePath of possiblePaths) {
+        console.log('Trying path:', filePath);
+        if (fs.existsSync(filePath)) {
+          exportFilePath = filePath;
+          console.log('✓ Found file at:', filePath);
+          break;
+        }
+      }
+      
+      if (!exportFilePath) {
+        console.error('❌ Arquivo não encontrado em nenhum dos caminhos testados');
+        console.error('Caminhos testados:', possiblePaths);
         return res.status(404).json({ 
-          error: 'Arquivo database-export.json não encontrado. Execute o script de exportação primeiro.' 
+          error: 'Arquivo database-export.json não encontrado no deployment.',
+          hint: 'Certifique-se de que o arquivo está commitado no Git e incluído no deployment.',
+          cwd: process.cwd(),
+          dirname: __dirname,
         });
       }
       
       const data = JSON.parse(fs.readFileSync(exportFilePath, 'utf-8'));
+      console.log('✓ Arquivo carregado com sucesso');
       const results: any = {
         categories: 0,
         products: 0,
