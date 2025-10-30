@@ -593,36 +593,40 @@ export function registerRoutes(app: Express) {
         }
       }
 
-      // 5. IMPORTAR QUOTE REQUESTS E ITEMS
+      // 5. IMPORTAR QUOTE REQUESTS E ITEMS (OPCIONAL - PULA SE DER ERRO)
       console.log('📋 Importando quote requests...');
-      for (const quote of data.quoteRequests) {
-        const { id, createdAt, ...quoteData } = quote;
-        
-        try {
-          const newQuote = await storage.createQuoteRequest(quoteData);
-          results.quoteRequests++;
+      try {
+        for (const quote of data.quoteRequests || []) {
+          const { id, createdAt, ...quoteData } = quote;
           
-          // Importar items desta quote
-          const quoteItemsForThisQuote = data.quoteItems.filter((item: any) => item.quoteRequestId === id);
-          
-          for (const item of quoteItemsForThisQuote) {
-            const { id: itemId, quoteRequestId, productId, ...itemData } = item;
-            const mappedProductId = productIdMap.get(productId) || productId;
+          try {
+            const newQuote = await storage.createQuoteRequest(quoteData);
+            results.quoteRequests++;
             
-            try {
-              await storage.createQuoteItem({
-                ...itemData,
-                quoteRequestId: newQuote.id,
-                productId: mappedProductId,
-              });
-              results.quoteItems++;
-            } catch (err) {
-              console.error(`Erro ao importar quote item:`, err);
+            // Importar items desta quote
+            const quoteItemsForThisQuote = (data.quoteItems || []).filter((item: any) => item.quoteRequestId === id);
+            
+            for (const item of quoteItemsForThisQuote) {
+              const { id: itemId, quoteRequestId, productId, ...itemData } = item;
+              const mappedProductId = productIdMap.get(productId) || productId;
+              
+              try {
+                await storage.createQuoteItem({
+                  ...itemData,
+                  quoteRequestId: newQuote.id,
+                  productId: mappedProductId,
+                });
+                results.quoteItems++;
+              } catch (err) {
+                console.error(`Erro ao importar quote item:`, err);
+              }
             }
+          } catch (err) {
+            console.error(`Erro ao importar quote request (pulado):`, err);
           }
-        } catch (err) {
-          console.error(`Erro ao importar quote request:`, err);
         }
+      } catch (err) {
+        console.log('⚠️ Quotes não importadas (não essencial)');
       }
 
       console.log('✨ Importação concluída!');
