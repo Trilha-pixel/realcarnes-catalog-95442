@@ -28,6 +28,7 @@ import CategoryManagement from "./pages/admin/CategoryManagement";
 import BannerManagement from "./pages/admin/BannerManagement";
 import UserManagement from "./pages/admin/UserManagement";
 import QuoteManagementAdmin from "./pages/admin/QuoteManagementAdmin";
+import ImportData from "./pages/admin/ImportData";
 import NotFound from "./pages/NotFound";
 
 const App = () => (
@@ -71,6 +72,7 @@ const App = () => (
               <Route path="/admin/categorias" element={<CategoryManagement />} />
               <Route path="/admin/banners" element={<BannerManagement />} />
               <Route path="/admin/usuarios" element={<UserManagement />} />
+              <Route path="/admin/import-data" element={<ImportData />} />
               
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
