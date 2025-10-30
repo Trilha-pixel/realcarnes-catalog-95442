@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { CheckCircle2, AlertCircle, Database, Loader2 } from "lucide-react";
-import { apiRequest } from "@/lib/queryClient";
+import databaseExport from "@/data/database-export.json";
 
 export default function ImportData() {
   const [isImporting, setIsImporting] = useState(false);
@@ -16,11 +16,22 @@ export default function ImportData() {
     setResult(null);
 
     try {
-      const response = await apiRequest("/api/import-production-data", {
+      // Enviar os dados diretamente via POST
+      const response = await fetch("/api/import-production-data", {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(databaseExport),
       });
 
-      setResult(response);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setResult(data);
     } catch (err: any) {
       setError(err.message || "Erro ao importar dados");
     } finally {
