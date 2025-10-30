@@ -9,9 +9,10 @@ const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// In production, use port 5000 (Replit deployment)
+// Port configuration
+// Replit Autoscale sets PORT to 5000 (forwarded to external port 80)
 // In development, use 5001 (separate from Vite dev server on 5000)
-const PORT = process.env.PORT || (process.env.NODE_ENV === 'production' ? 5000 : 5001);
+const PORT = process.env.PORT ? parseInt(process.env.PORT) : (process.env.NODE_ENV === 'production' ? 5000 : 5001);
 
 // Middleware
 app.use(cors());
@@ -63,8 +64,12 @@ if (process.env.NODE_ENV === 'production') {
   app.use('/produtos', express.static(join(__dirname, '..', 'public', 'produtos')));
   
   // SPA fallback - serve index.html for all non-API routes
-  app.get('*', (req: Request, res: Response) => {
-    res.sendFile(join(distPath, 'index.html'));
+  // Using '/*' instead of '*' for Express 5.x compatibility
+  app.get('/*', (req: Request, res: Response) => {
+    // Only serve index.html for non-API routes
+    if (!req.path.startsWith('/api')) {
+      res.sendFile(join(distPath, 'index.html'));
+    }
   });
 }
 
@@ -76,8 +81,15 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   res.status(status).json({ error: message });
 });
 
-// Start server
-app.listen(PORT, () => {
+// Start server with error handling
+const server = app.listen(PORT, () => {
   console.log(`🚀 Royal Alimentos API Server running on port ${PORT}`);
   console.log(`📊 API available at http://localhost:${PORT}/api`);
+  console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+}).on('error', (err: any) => {
+  console.error('❌ Failed to start server:', err);
+  if (err.code === 'EADDRINUSE') {
+    console.error(`Port ${PORT} is already in use`);
+  }
+  process.exit(1);
 });
