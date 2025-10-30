@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Imagens de produtos (470 arquivos)
+public/produtos/
