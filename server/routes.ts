@@ -470,6 +470,177 @@ export function registerRoutes(app: Express) {
   });
 
   // ==========================================
+  // IMPORT PRODUCTION DATA
+  // ==========================================
+  app.post("/api/import-production-data", async (req, res) => {
+    try {
+      // Importar dados do arquivo JSON exportado
+      const fs = await import('fs');
+      const path = await import('path');
+      
+      console.log('📥 Starting data import...');
+      
+      // Ler arquivo JSON exportado
+      const exportFilePath = path.join(process.cwd(), 'database-export.json');
+      
+      if (!fs.existsSync(exportFilePath)) {
+        return res.status(404).json({ 
+          error: 'Arquivo database-export.json não encontrado. Execute o script de exportação primeiro.' 
+        });
+      }
+      
+      const data = JSON.parse(fs.readFileSync(exportFilePath, 'utf-8'));
+      const results: any = {
+        categories: 0,
+        products: 0,
+        adminUsers: 0,
+        banners: 0,
+        quoteRequests: 0,
+        quoteItems: 0,
+      };
+
+      // 1. IMPORTAR CATEGORIAS
+      console.log('📦 Importando categorias...');
+      const categoryIdMap = new Map();
+      
+      for (const cat of data.categories) {
+        const { id, ...categoryData } = cat;
+        try {
+          // Tenta criar ou buscar categoria existente
+          let category = await storage.getCategoryBySlug(categoryData.slug);
+          if (!category) {
+            category = await storage.createCategory(categoryData);
+          } else {
+            category = await storage.updateCategory(category.id, categoryData);
+          }
+          categoryIdMap.set(id, category.id);
+          results.categories++;
+        } catch (err) {
+          console.error(`Erro ao importar categoria ${categoryData.name}:`, err);
+        }
+      }
+
+      // 2. IMPORTAR PRODUTOS
+      console.log('📦 Importando produtos...');
+      const productIdMap = new Map();
+      
+      for (const prod of data.products) {
+        const { id, categoryId, createdAt, updatedAt, ...productData } = prod;
+        const mappedCategoryId = categoryIdMap.get(categoryId) || categoryId;
+        
+        try {
+          // Tenta buscar produto existente pelo SKU
+          const existingProduct = await storage.getProductBySku(productData.sku);
+          let product;
+          
+          if (!existingProduct) {
+            product = await storage.createProduct({
+              ...productData,
+              categoryId: mappedCategoryId,
+            });
+          } else {
+            product = await storage.updateProduct(existingProduct.id, {
+              ...productData,
+              categoryId: mappedCategoryId,
+            });
+          }
+          
+          productIdMap.set(id, product.id);
+          results.products++;
+          
+          if (results.products % 50 === 0) {
+            console.log(`   ✓ ${results.products} produtos importados...`);
+          }
+        } catch (err) {
+          console.error(`Erro ao importar produto ${productData.sku}:`, err);
+        }
+      }
+
+      // 3. IMPORTAR USUÁRIOS
+      console.log('👤 Importando usuários...');
+      for (const user of data.adminUsers) {
+        const { id, createdAt, ...userData } = user;
+        
+        try {
+          const existingUser = await storage.getAdminUserByEmail(userData.email);
+          if (!existingUser) {
+            await storage.createAdminUser(userData);
+          } else {
+            await storage.updateAdminUser(existingUser.id, userData);
+          }
+          results.adminUsers++;
+        } catch (err) {
+          console.error(`Erro ao importar usuário ${userData.email}:`, err);
+        }
+      }
+
+      // 4. IMPORTAR BANNERS
+      console.log('🎨 Importando banners...');
+      // Limpa banners existentes
+      const existingBanners = await storage.getBanners();
+      for (const banner of existingBanners) {
+        await storage.deleteBanner(banner.id);
+      }
+      
+      for (const banner of data.banners) {
+        const { id, createdAt, ...bannerData } = banner;
+        
+        try {
+          await storage.createBanner(bannerData);
+          results.banners++;
+        } catch (err) {
+          console.error(`Erro ao importar banner:`, err);
+        }
+      }
+
+      // 5. IMPORTAR QUOTE REQUESTS E ITEMS
+      console.log('📋 Importando quote requests...');
+      for (const quote of data.quoteRequests) {
+        const { id, createdAt, ...quoteData } = quote;
+        
+        try {
+          const newQuote = await storage.createQuoteRequest(quoteData);
+          results.quoteRequests++;
+          
+          // Importar items desta quote
+          const quoteItemsForThisQuote = data.quoteItems.filter((item: any) => item.quoteRequestId === id);
+          
+          for (const item of quoteItemsForThisQuote) {
+            const { id: itemId, quoteRequestId, productId, ...itemData } = item;
+            const mappedProductId = productIdMap.get(productId) || productId;
+            
+            try {
+              await storage.createQuoteItem({
+                ...itemData,
+                quoteRequestId: newQuote.id,
+                productId: mappedProductId,
+              });
+              results.quoteItems++;
+            } catch (err) {
+              console.error(`Erro ao importar quote item:`, err);
+            }
+          }
+        } catch (err) {
+          console.error(`Erro ao importar quote request:`, err);
+        }
+      }
+
+      console.log('✨ Importação concluída!');
+      res.json({
+        success: true,
+        message: 'Dados importados com sucesso!',
+        results,
+      });
+    } catch (error) {
+      console.error("Erro ao importar dados:", error);
+      res.status(500).json({ 
+        error: "Falha ao importar dados", 
+        details: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
+
+  // ==========================================
   // HEALTH CHECK
   // ==========================================
   app.get("/api/health", (req, res) => {

@@ -267,3 +267,55 @@ Planned integrations:
 - ✅ QuoteManagementAdmin (view & update status)
 
 **Migration Complete:** ✅ All pages now use PostgreSQL database via API hooks (useProducts, useCategories, useBanners, useQuotes, useAdminUsers, CartContext)
+
+## 📥 Production Data Import System
+
+### Overview
+Sistema completo de importação de dados do desenvolvimento para produção via interface web.
+
+### Components Created
+**API Endpoint:** `/api/import-production-data` (POST)
+- Location: `server/routes.ts`
+- Reads `database-export.json` file
+- Imports all data: categories, products, users, banners, quotes
+- Uses upsert logic to prevent duplicates
+- Maps IDs between related tables automatically
+
+**Admin Page:** `/admin/import-data`
+- Location: `src/pages/admin/ImportData.tsx`
+- Visual interface with import button
+- Shows progress and results in real-time
+- Displays detailed summary after completion
+
+**Export Files:**
+- `database-export.json` (211 KB): Complete database snapshot with 476 products
+- `import-production.sql` (290 KB): SQL alternative (optional)
+- Scripts: `server/export-database.ts`, `server/import-database.ts`
+
+### Usage Workflow
+1. Deploy project to production (Publish button)
+2. Access `/admin/import-data` on **production site**
+3. Click "Iniciar Importação" button
+4. Wait 30-60 seconds for completion
+5. Verify site has all data (categories, products, banners)
+
+### Import Process
+The endpoint performs these steps in order:
+1. **Categories** (6 items) - Creates or updates by slug
+2. **Products** (476 items) - Creates or updates by SKU
+3. **Admin Users** (3 items) - Creates or updates by email
+4. **Banners** (4 items) - Deletes old, inserts new
+5. **Quote Requests + Items** - Creates with mapped IDs
+
+### Safety Features
+- ✅ Non-destructive: Uses ON CONFLICT DO UPDATE
+- ✅ No duplicates: Matches by unique keys (slug, SKU, email)
+- ✅ Transactional: All or nothing
+- ✅ ID mapping: Correctly relates foreign keys
+
+### Files Involved
+- `server/routes.ts` - Import endpoint implementation
+- `src/pages/admin/ImportData.tsx` - UI for triggering import
+- `src/App.tsx` - Route registration
+- `database-export.json` - Data source (included in Git)
+- `COMO_IMPORTAR_PARA_PRODUCAO.md` - Detailed user instructions
