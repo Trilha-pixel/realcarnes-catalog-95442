@@ -474,44 +474,48 @@ export function registerRoutes(app: Express) {
   // ==========================================
   app.post("/api/import-production-data", async (req, res) => {
     try {
-      // Importar dados do arquivo JSON exportado
-      const fs = await import('fs');
-      const path = await import('path');
-      
       console.log('📥 Starting data import...');
-      console.log('Current directory:', process.cwd());
       
-      // Tentar múltiplos caminhos possíveis
-      const possiblePaths = [
-        path.join(process.cwd(), 'database-export.json'),
-        '/home/runner/workspace/database-export.json',
-        './database-export.json',
-        'database-export.json',
-      ];
+      let data: any;
       
-      let exportFilePath: string | null = null;
-      for (const filePath of possiblePaths) {
-        console.log('Trying path:', filePath);
-        if (fs.existsSync(filePath)) {
-          exportFilePath = filePath;
-          console.log('✓ Found file at:', filePath);
-          break;
+      // OPÇÃO 1: Dados enviados via POST body (preferencial)
+      if (req.body && Object.keys(req.body).length > 0) {
+        console.log('✓ Usando dados do POST body');
+        data = req.body;
+      } 
+      // OPÇÃO 2: Tentar ler do arquivo (fallback)
+      else {
+        const fs = await import('fs');
+        const path = await import('path');
+        
+        console.log('Tentando ler do arquivo...');
+        const possiblePaths = [
+          path.join(process.cwd(), 'database-export.json'),
+          '/home/runner/workspace/database-export.json',
+          './database-export.json',
+          'database-export.json',
+        ];
+        
+        let exportFilePath: string | null = null;
+        for (const filePath of possiblePaths) {
+          if (fs.existsSync(filePath)) {
+            exportFilePath = filePath;
+            console.log('✓ Found file at:', filePath);
+            break;
+          }
         }
+        
+        if (!exportFilePath) {
+          return res.status(404).json({ 
+            error: 'Nenhuma fonte de dados encontrada',
+            hint: 'Envie os dados via POST ou certifique-se de que database-export.json existe no deployment',
+            cwd: process.cwd(),
+          });
+        }
+        
+        data = JSON.parse(fs.readFileSync(exportFilePath, 'utf-8'));
+        console.log('✓ Arquivo carregado com sucesso');
       }
-      
-      if (!exportFilePath) {
-        console.error('❌ Arquivo não encontrado em nenhum dos caminhos testados');
-        console.error('Caminhos testados:', possiblePaths);
-        return res.status(404).json({ 
-          error: 'Arquivo database-export.json não encontrado no deployment.',
-          hint: 'Certifique-se de que o arquivo está commitado no Git e incluído no deployment.',
-          cwd: process.cwd(),
-          testedPaths: possiblePaths,
-        });
-      }
-      
-      const data = JSON.parse(fs.readFileSync(exportFilePath, 'utf-8'));
-      console.log('✓ Arquivo carregado com sucesso');
       const results: any = {
         categories: 0,
         products: 0,
