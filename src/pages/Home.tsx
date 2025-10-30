@@ -146,21 +146,30 @@ const Home = () => {
         </section>
 
         {/* Hero CTA Section */}
-        <section className="relative py-24 bg-primary text-white overflow-hidden">
+        <section className="relative py-32 md:py-40 overflow-hidden">
+          {/* Background Image */}
           <div 
-            className="absolute inset-0 bg-cover bg-center opacity-20"
+            className="absolute inset-0 bg-cover bg-center"
             style={{ backgroundImage: `url(${heroPicanhaImage})` }}
           />
+          {/* Gradient Overlay for better text readability */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/60" />
+          
           <div className="container px-4 relative z-10">
-            <div className="max-w-3xl mx-auto text-center">
-              <h2 className="text-3xl md:text-5xl font-bold mb-6">
-                Solicite seu Orçamento
+            <div className="max-w-4xl mx-auto text-center">
+              <h2 className="text-4xl md:text-6xl font-bold mb-6 text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
+                Pronto para elevar a qualidade<br className="hidden md:block" /> do seu negócio?
               </h2>
-              <p className="text-xl mb-8 opacity-90">
-                Atendimento especializado para seu negócio. Solicite já seu orçamento personalizado.
+              <p className="text-lg md:text-xl mb-10 text-white/95 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] max-w-3xl mx-auto">
+                Solicite um orçamento personalizado e descubra como podemos ajudar seu negócio.
               </p>
-              <Button asChild size="lg" variant="secondary" className="gap-2" data-testid="button-request-quote">
-                <Link to="/produtos">
+              <Button 
+                asChild 
+                size="lg" 
+                className="bg-[#F50000] hover:bg-[#D90000] text-white font-semibold text-lg px-10 py-6 h-auto shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105" 
+                data-testid="button-request-quote"
+              >
+                <Link to="/produtos" className="gap-2">
                   Solicitar Orçamento
                   <ArrowRight className="h-5 w-5" />
                 </Link>
