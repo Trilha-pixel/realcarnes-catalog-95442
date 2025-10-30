@@ -187,12 +187,23 @@ The `/admin` section provides complete content management:
 
 **Deployment & Hosting**
 - Configured for Replit hosting (.repl.co, .replit.dev domains)
+
+**Development Mode:**
 - Frontend: Vite dev server on port 5000
 - Backend: Express API server on port 5001
+- Two workflows: "Start application" (Vite), "Backend API" (Express)
 - Vite proxy: `/api/*` requests forwarded to Express backend
 - HMR configured for Replit's proxy setup
-- Build outputs to `dist/` directory
-- Two workflows: "Start application" (Vite), "Backend API" (Express)
+
+**Production Deployment:**
+- Build: `npm run build` (Vite compiles to `dist/`)
+- Run: `npm start` (Express serves static files + API on port 5000)
+- Deployment target: Autoscale (Replit)
+- Express serves:
+  - Static frontend files from `dist/`
+  - Product images from `public/produtos/`
+  - API endpoints under `/api/*`
+  - SPA fallback for client-side routing
 
 **Database Details**
 - Provider: Neon (PostgreSQL cloud)

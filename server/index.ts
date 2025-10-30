@@ -2,9 +2,16 @@
 import express, { type Request, Response, NextFunction } from "express";
 import cors from "cors";
 import { registerRoutes } from "./routes";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
 
 const app = express();
-const PORT = process.env.PORT || 5001; // Backend API on port 5001 in dev
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// In production, use port 5000 (Replit deployment)
+// In development, use 5001 (separate from Vite dev server on 5000)
+const PORT = process.env.PORT || (process.env.NODE_ENV === 'production' ? 5000 : 5001);
 
 // Middleware
 app.use(cors());
@@ -44,6 +51,22 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 
 // Register API routes
 registerRoutes(app);
+
+// Serve static files from dist in production
+if (process.env.NODE_ENV === 'production') {
+  const distPath = join(__dirname, '..', 'dist');
+  
+  // Serve static assets
+  app.use(express.static(distPath));
+  
+  // Serve public folder (produtos images)
+  app.use('/produtos', express.static(join(__dirname, '..', 'public', 'produtos')));
+  
+  // SPA fallback - serve index.html for all non-API routes
+  app.get('*', (req: Request, res: Response) => {
+    res.sendFile(join(distPath, 'index.html'));
+  });
+}
 
 // Error handling middleware
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
