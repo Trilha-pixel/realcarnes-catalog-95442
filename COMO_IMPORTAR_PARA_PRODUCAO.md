@@ -6,6 +6,22 @@ Criamos um sistema completo de importação via interface web! Agora você pode 
 
 ---
 
+## ⚠️ IMPORTANTE: Preparação Necessária
+
+Antes de fazer deploy, garanta que o arquivo `database-export.json` será incluído:
+
+### Passo 0: Adicionar Arquivo ao Git
+
+No **Shell do Replit**, execute:
+```bash
+git add database-export.json
+git commit -m "Add database export for production"
+```
+
+*Isso garante que o arquivo será incluído no deployment.*
+
+---
+
 ## 🚀 Passo a Passo Completo
 
 ### 1️⃣ Fazer Deploy do Projeto
