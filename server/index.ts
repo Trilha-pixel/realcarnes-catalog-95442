@@ -50,38 +50,26 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
-// Serve static files from dist in production (BEFORE API routes for assets)
+// Register API routes
+registerRoutes(app);
+
+// Serve static files from dist in production
 if (process.env.NODE_ENV === 'production') {
   const distPath = join(__dirname, '..', 'dist');
+  
+  // Serve static assets
+  app.use(express.static(distPath));
   
   // Serve public folder (produtos images)
   app.use('/produtos', express.static(join(__dirname, '..', 'public', 'produtos')));
   
-  // Serve static assets from dist
-  app.use(express.static(distPath));
-}
-
-// Register API routes
-registerRoutes(app);
-
-// SPA fallback for production - serve index.html for all other routes
-if (process.env.NODE_ENV === 'production') {
-  const distPath = join(__dirname, '..', 'dist');
-  
-  // Catch-all handler for SPA routing (Express 5.x compatible)
-  app.use((req: Request, res: Response, next: NextFunction) => {
-    // Don't interfere with API routes
-    if (req.path.startsWith('/api')) {
-      return next();
+  // SPA fallback - serve index.html for all non-API routes
+  // Using '/*' instead of '*' for Express 5.x compatibility
+  app.get('/*', (req: Request, res: Response) => {
+    // Only serve index.html for non-API routes
+    if (!req.path.startsWith('/api')) {
+      res.sendFile(join(distPath, 'index.html'));
     }
-    
-    // Serve index.html for all other routes
-    res.sendFile(join(distPath, 'index.html'), (err) => {
-      if (err) {
-        console.error('Error serving index.html:', err);
-        res.status(500).send('Server Error');
-      }
-    });
   });
 }
 
