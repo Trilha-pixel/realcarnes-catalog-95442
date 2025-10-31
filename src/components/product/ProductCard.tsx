@@ -63,11 +63,11 @@ export const ProductCard = ({ product }: ProductCardProps) => {
         </Button>
         <Button 
           onClick={handleAddToCart}
-          className="w-full sm:flex-1 bg-primary hover:bg-primary-hover"
+          className="w-full sm:flex-1 bg-primary hover:bg-primary-hover whitespace-nowrap"
           data-testid={`button-add-cart-${product.id}`}
         >
-          <ClipboardList className="h-4 w-4 mr-1 flex-shrink-0" />
-          <span className="truncate">Adicionar à Cotação</span>
+          <ClipboardList className="h-4 w-4 mr-2 flex-shrink-0" />
+          Adicionar
         </Button>
       </CardFooter>
     </Card>
