@@ -64,11 +64,13 @@ if (process.env.NODE_ENV === 'production') {
   app.use('/produtos', express.static(join(__dirname, '..', 'public', 'produtos')));
   
   // SPA fallback - serve index.html for all non-API routes
-  // Using '/*' instead of '*' for Express 5.x compatibility
-  app.get('/*', (req: Request, res: Response) => {
+  // Express 5.x requires app.use() middleware instead of app.get('/*')
+  app.use((req: Request, res: Response, next: NextFunction) => {
     // Only serve index.html for non-API routes
-    if (!req.path.startsWith('/api')) {
+    if (!req.path.startsWith('/api') && !req.path.startsWith('/produtos')) {
       res.sendFile(join(distPath, 'index.html'));
+    } else {
+      next();
     }
   });
 }
