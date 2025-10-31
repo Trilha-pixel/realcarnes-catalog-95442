@@ -22,6 +22,7 @@ Preferred communication style: Simple, everyday language.
   - Height adjusts automatically (h-auto) to accommodate text
   - Icon with flex-shrink-0 prevents compression
 - ✅ Reduced header logo size by 10% (from 56px to 50px height) for better visual balance
+- ✅ Removed opacity effect from header logo hover for cleaner interaction
 
 ## System Architecture
 

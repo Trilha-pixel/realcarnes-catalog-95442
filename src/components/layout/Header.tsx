@@ -95,7 +95,7 @@ export const Header = () => {
           <div className="container px-4">
             <div className="flex items-center justify-between h-20">
               {/* Logo */}
-              <Link to="/" className="flex items-center hover:opacity-80 transition-opacity">
+              <Link to="/" className="flex items-center">
                 <img 
                   src={logoRoyalAlimentos} 
                   alt="Royal Alimentos" 
@@ -222,7 +222,7 @@ export const Header = () => {
           <div className="container px-4">
             <div className="flex items-center justify-between h-16">
               {/* Logo Mobile */}
-              <Link to="/" className="flex items-center hover:opacity-80 transition-opacity">
+              <Link to="/" className="flex items-center">
                 <img 
                   src={logoRoyalAlimentos} 
                   alt="Royal Alimentos" 
