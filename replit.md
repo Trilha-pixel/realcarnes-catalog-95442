@@ -23,6 +23,7 @@ Preferred communication style: Simple, everyday language.
   - Icon with flex-shrink-0 prevents compression
 - ✅ Reduced header logo size by 10% (from 56px to 50px height) for better visual balance
 - ✅ Removed opacity effect from header logo hover for cleaner interaction
+- ✅ Fixed header transparency issue - Changed from bg-muted/50 to bg-muted for 100% solid background (no transparency on scroll)
 
 ## System Architecture
 
