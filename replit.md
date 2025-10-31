@@ -24,6 +24,12 @@ Preferred communication style: Simple, everyday language.
 - ✅ Reduced header logo size by 10% (from 56px to 50px height) for better visual balance
 - ✅ Removed opacity effect from header logo hover for cleaner interaction
 - ✅ Fixed header transparency issue - Changed from bg-muted/50 to bg-muted for 100% solid background (no transparency on scroll)
+- ✅ Implemented 2-step checkout process for quote requests (/orcamento)
+  - Step 1: Product selection and quantity adjustment
+  - Step 2: Customer contact information form
+  - Visual progress indicator showing current step
+  - Navigation between steps with "Avançar" and "Voltar" buttons
+  - Summary card on step 2 showing total items
 
 ## System Architecture
 

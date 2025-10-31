@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Trash2, Plus, Minus, ArrowLeft, Send } from 'lucide-react';
+import { Trash2, Plus, Minus, ArrowLeft, ArrowRight, Send, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -30,6 +30,8 @@ const QuoteList = () => {
     updateQuantity,
     clearCart
   } = useCart();
+
+  const [currentStep, setCurrentStep] = useState<1 | 2>(1);
 
   const [customerData, setCustomerData] = useState({
     name: '',
@@ -73,6 +75,20 @@ const QuoteList = () => {
       toast.error('Erro ao enviar orçamento. Tente novamente.');
     },
   });
+
+  const handleNextStep = () => {
+    if (cart.length === 0) {
+      toast.error('Adicione produtos à lista antes de continuar');
+      return;
+    }
+    setCurrentStep(2);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handlePreviousStep = () => {
+    setCurrentStep(1);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -135,22 +151,52 @@ const QuoteList = () => {
       
       <main className="flex-1 bg-muted/30">
         <div className="container px-4 py-8">
-          <Button variant="ghost" asChild className="mb-6">
+          <Button variant="ghost" asChild className="mb-6" data-testid="button-back-products">
             <Link to="/produtos">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Continuar comprando
             </Link>
           </Button>
 
-          <h1 className="text-4xl font-bold mb-8">Lista de Orçamento</h1>
+          {/* Progress Indicator */}
+          <div className="mb-8">
+            <div className="flex items-center justify-center gap-4 mb-4">
+              <div className={`flex items-center gap-2 ${currentStep === 1 ? 'text-primary' : 'text-muted-foreground'}`}>
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${
+                  currentStep === 1 ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
+                }`}>
+                  1
+                </div>
+                <span className="font-semibold hidden sm:inline">Produtos</span>
+              </div>
+              
+              <div className="w-16 h-1 bg-muted">
+                <div className={`h-full transition-all duration-300 ${currentStep === 2 ? 'bg-primary w-full' : 'bg-transparent w-0'}`}></div>
+              </div>
+              
+              <div className={`flex items-center gap-2 ${currentStep === 2 ? 'text-primary' : 'text-muted-foreground'}`}>
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${
+                  currentStep === 2 ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
+                }`}>
+                  2
+                </div>
+                <span className="font-semibold hidden sm:inline">Dados de Contato</span>
+              </div>
+            </div>
+          </div>
+
+          <h1 className="text-4xl font-bold mb-8">
+            {currentStep === 1 ? 'Lista de Orçamento' : 'Seus Dados para Contato'}
+          </h1>
 
           {cart.length === 0 ? (
             <Card className="text-center py-12">
               <CardContent>
+                <ShoppingCart className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
                 <p className="text-xl text-muted-foreground mb-6">
                   Sua lista está vazia
                 </p>
-                <Button asChild>
+                <Button asChild data-testid="button-view-products">
                   <Link to="/produtos">
                     Ver Produtos
                   </Link>
@@ -158,186 +204,241 @@ const QuoteList = () => {
               </CardContent>
             </Card>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Cart Items */}
-              <div className="lg:col-span-2 space-y-4">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Produtos Selecionados ({totalItems} {totalItems === 1 ? 'item' : 'itens'})</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {cart.map((item, index) => (
-                      <div key={item.product.id}>
-                        {index > 0 && <Separator />}
-                        <div className="flex gap-4 py-4">
-                          <Link 
-                            to={`/produto/${item.product.id}`}
-                            className="flex-shrink-0"
-                          >
-                            <img
-                              src={item.product.images[0]}
-                              alt={item.product.name}
-                              className="w-24 h-24 object-cover rounded-lg hover:opacity-80 transition-opacity"
-                            />
-                          </Link>
-                          
-                          <div className="flex-1 min-w-0">
+            <>
+              {/* ETAPA 1: PRODUTOS */}
+              {currentStep === 1 && (
+                <div className="max-w-4xl mx-auto">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Produtos Selecionados ({totalItems} {totalItems === 1 ? 'item' : 'itens'})</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      {cart.map((item, index) => (
+                        <div key={item.product.id}>
+                          {index > 0 && <Separator />}
+                          <div className="flex gap-4 py-4" data-testid={`cart-item-${item.product.id}`}>
                             <Link 
                               to={`/produto/${item.product.id}`}
-                              className="hover:text-primary transition-colors"
+                              className="flex-shrink-0"
                             >
-                              <h3 className="font-semibold mb-1">{item.product.name}</h3>
+                              <img
+                                src={item.product.images[0]}
+                                alt={item.product.name}
+                                className="w-24 h-24 object-cover rounded-lg hover:opacity-80 transition-opacity"
+                                data-testid={`img-product-${item.product.id}`}
+                              />
                             </Link>
-                            <p className="text-sm text-muted-foreground mb-2">
-                              Código: {item.product.sku}
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              {item.product.packaging}
-                            </p>
-                          </div>
+                            
+                            <div className="flex-1 min-w-0">
+                              <Link 
+                                to={`/produto/${item.product.id}`}
+                                className="hover:text-primary transition-colors"
+                              >
+                                <h3 className="font-semibold mb-1" data-testid={`text-product-name-${item.product.id}`}>
+                                  {item.product.name}
+                                </h3>
+                              </Link>
+                              <p className="text-sm text-muted-foreground mb-2" data-testid={`text-product-sku-${item.product.id}`}>
+                                Código: {item.product.sku}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                {item.product.packaging}
+                              </p>
+                            </div>
 
-                          <div className="flex flex-col items-end gap-3">
-                            <div className="flex items-center border rounded-lg">
+                            <div className="flex flex-col items-end gap-3">
+                              <div className="flex items-center border rounded-lg">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
+                                  className="h-8 w-8"
+                                  data-testid={`button-decrease-${item.product.id}`}
+                                >
+                                  <Minus className="h-3 w-3" />
+                                </Button>
+                                <span className="w-12 text-center text-sm font-medium" data-testid={`text-quantity-${item.product.id}`}>
+                                  {item.quantity}
+                                </span>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
+                                  className="h-8 w-8"
+                                  data-testid={`button-increase-${item.product.id}`}
+                                >
+                                  <Plus className="h-3 w-3" />
+                                </Button>
+                              </div>
+                              
                               <Button
                                 variant="ghost"
-                                size="icon"
-                                onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
-                                className="h-8 w-8"
+                                size="sm"
+                                onClick={() => {
+                                  removeFromCart(item.product.id);
+                                  toast.info('Produto removido da lista');
+                                }}
+                                className="text-destructive hover:text-destructive"
+                                data-testid={`button-remove-${item.product.id}`}
                               >
-                                <Minus className="h-3 w-3" />
-                              </Button>
-                              <span className="w-12 text-center text-sm font-medium">
-                                {item.quantity}
-                              </span>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
-                                className="h-8 w-8"
-                              >
-                                <Plus className="h-3 w-3" />
+                                <Trash2 className="h-4 w-4 mr-1" />
+                                Remover
                               </Button>
                             </div>
-                            
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => {
-                                removeFromCart(item.product.id);
-                                toast.info('Produto removido da lista');
-                              }}
-                              className="text-destructive hover:text-destructive"
-                            >
-                              <Trash2 className="h-4 w-4 mr-1" />
-                              Remover
-                            </Button>
                           </div>
                         </div>
+                      ))}
+                    </CardContent>
+                  </Card>
+
+                  <div className="mt-8 flex justify-end">
+                    <Button 
+                      size="lg" 
+                      onClick={handleNextStep}
+                      className="bg-primary hover:bg-primary-hover"
+                      data-testid="button-next-step"
+                    >
+                      Avançar para Dados de Contato
+                      <ArrowRight className="h-5 w-5 ml-2" />
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              {/* ETAPA 2: FORMULÁRIO DE CONTATO */}
+              {currentStep === 2 && (
+                <div className="max-w-2xl mx-auto">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Preencha seus dados</CardTitle>
+                      <p className="text-sm text-muted-foreground">
+                        Nossa equipe comercial entrará em contato em até 24 horas com os preços e condições comerciais.
+                      </p>
+                    </CardHeader>
+                    <CardContent>
+                      <form onSubmit={handleSubmit} className="space-y-4">
+                        <div>
+                          <Label htmlFor="name">Nome Completo *</Label>
+                          <Input
+                            id="name"
+                            value={customerData.name}
+                            onChange={(e) => handleInputChange('name', e.target.value)}
+                            className={errors.name ? 'border-destructive' : ''}
+                            data-testid="input-name"
+                          />
+                          {errors.name && (
+                            <p className="text-sm text-destructive mt-1">{errors.name}</p>
+                          )}
+                        </div>
+
+                        <div>
+                          <Label htmlFor="company">Empresa *</Label>
+                          <Input
+                            id="company"
+                            value={customerData.company}
+                            onChange={(e) => handleInputChange('company', e.target.value)}
+                            className={errors.company ? 'border-destructive' : ''}
+                            data-testid="input-company"
+                          />
+                          {errors.company && (
+                            <p className="text-sm text-destructive mt-1">{errors.company}</p>
+                          )}
+                        </div>
+
+                        <div>
+                          <Label htmlFor="cnpj">CNPJ *</Label>
+                          <Input
+                            id="cnpj"
+                            value={customerData.cnpj}
+                            onChange={(e) => handleInputChange('cnpj', formatCNPJ(e.target.value))}
+                            placeholder="00.000.000/0000-00"
+                            className={errors.cnpj ? 'border-destructive' : ''}
+                            data-testid="input-cnpj"
+                          />
+                          {errors.cnpj && (
+                            <p className="text-sm text-destructive mt-1">{errors.cnpj}</p>
+                          )}
+                        </div>
+
+                        <div>
+                          <Label htmlFor="email">E-mail *</Label>
+                          <Input
+                            id="email"
+                            type="email"
+                            value={customerData.email}
+                            onChange={(e) => handleInputChange('email', e.target.value)}
+                            className={errors.email ? 'border-destructive' : ''}
+                            data-testid="input-email"
+                          />
+                          {errors.email && (
+                            <p className="text-sm text-destructive mt-1">{errors.email}</p>
+                          )}
+                        </div>
+
+                        <div>
+                          <Label htmlFor="phone">Telefone / WhatsApp *</Label>
+                          <Input
+                            id="phone"
+                            value={customerData.phone}
+                            onChange={(e) => handleInputChange('phone', formatPhone(e.target.value))}
+                            placeholder="(00) 00000-0000"
+                            className={errors.phone ? 'border-destructive' : ''}
+                            data-testid="input-phone"
+                          />
+                          {errors.phone && (
+                            <p className="text-sm text-destructive mt-1">{errors.phone}</p>
+                          )}
+                        </div>
+
+                        <Separator className="my-6" />
+
+                        <div className="flex gap-4">
+                          <Button 
+                            type="button"
+                            variant="outline"
+                            onClick={handlePreviousStep}
+                            className="flex-1"
+                            data-testid="button-previous-step"
+                          >
+                            <ArrowLeft className="h-5 w-5 mr-2" />
+                            Voltar
+                          </Button>
+                          
+                          <Button 
+                            type="submit" 
+                            className="flex-1 bg-primary hover:bg-primary-hover"
+                            disabled={submitQuoteMutation.isPending}
+                            data-testid="button-submit-quote"
+                          >
+                            <Send className="h-5 w-5 mr-2" />
+                            {submitQuoteMutation.isPending ? 'Enviando...' : 'Solicitar Orçamento'}
+                          </Button>
+                        </div>
+                      </form>
+                    </CardContent>
+                  </Card>
+
+                  {/* Summary Card */}
+                  <Card className="mt-6">
+                    <CardHeader>
+                      <CardTitle className="text-lg">Resumo do Pedido</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Total de itens:</span>
+                          <span className="font-semibold">{totalItems}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Produtos diferentes:</span>
+                          <span className="font-semibold">{cart.length}</span>
+                        </div>
                       </div>
-                    ))}
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Contact Form */}
-              <div>
-                <Card className="sticky top-24">
-                  <CardHeader>
-                    <CardTitle>Seus Dados para Contato</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                      <div>
-                        <Label htmlFor="name">Nome Completo *</Label>
-                        <Input
-                          id="name"
-                          value={customerData.name}
-                          onChange={(e) => handleInputChange('name', e.target.value)}
-                          className={errors.name ? 'border-destructive' : ''}
-                        />
-                        {errors.name && (
-                          <p className="text-sm text-destructive mt-1">{errors.name}</p>
-                        )}
-                      </div>
-
-                      <div>
-                        <Label htmlFor="company">Empresa *</Label>
-                        <Input
-                          id="company"
-                          value={customerData.company}
-                          onChange={(e) => handleInputChange('company', e.target.value)}
-                          className={errors.company ? 'border-destructive' : ''}
-                        />
-                        {errors.company && (
-                          <p className="text-sm text-destructive mt-1">{errors.company}</p>
-                        )}
-                      </div>
-
-                      <div>
-                        <Label htmlFor="cnpj">CNPJ *</Label>
-                        <Input
-                          id="cnpj"
-                          value={customerData.cnpj}
-                          onChange={(e) => handleInputChange('cnpj', formatCNPJ(e.target.value))}
-                          placeholder="00.000.000/0000-00"
-                          className={errors.cnpj ? 'border-destructive' : ''}
-                        />
-                        {errors.cnpj && (
-                          <p className="text-sm text-destructive mt-1">{errors.cnpj}</p>
-                        )}
-                      </div>
-
-                      <div>
-                        <Label htmlFor="email">E-mail *</Label>
-                        <Input
-                          id="email"
-                          type="email"
-                          value={customerData.email}
-                          onChange={(e) => handleInputChange('email', e.target.value)}
-                          className={errors.email ? 'border-destructive' : ''}
-                        />
-                        {errors.email && (
-                          <p className="text-sm text-destructive mt-1">{errors.email}</p>
-                        )}
-                      </div>
-
-                      <div>
-                        <Label htmlFor="phone">Telefone / WhatsApp *</Label>
-                        <Input
-                          id="phone"
-                          value={customerData.phone}
-                          onChange={(e) => handleInputChange('phone', formatPhone(e.target.value))}
-                          placeholder="(00) 00000-0000"
-                          className={errors.phone ? 'border-destructive' : ''}
-                        />
-                        {errors.phone && (
-                          <p className="text-sm text-destructive mt-1">{errors.phone}</p>
-                        )}
-                      </div>
-
-                      <Separator />
-
-                      <div className="bg-muted/50 p-4 rounded-lg">
-                        <p className="text-sm text-muted-foreground">
-                          Nossa equipe comercial entrará em contato em até 24 horas com os preços e condições comerciais.
-                        </p>
-                      </div>
-
-                      <Button 
-                        type="submit" 
-                        size="lg" 
-                        className="w-full bg-primary hover:bg-primary-hover"
-                        disabled={submitQuoteMutation.isPending}
-                        data-testid="button-submit-quote"
-                      >
-                        <Send className="h-5 w-5 mr-2" />
-                        {submitQuoteMutation.isPending ? 'Enviando...' : 'Solicitar Orçamento'}
-                      </Button>
-                    </form>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
+            </>
           )}
         </div>
       </main>
