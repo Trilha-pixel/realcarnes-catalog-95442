@@ -91,7 +91,7 @@ export const Header = () => {
         </div>
 
         {/* Barra Principal - Cinza com Logo, Navegação e Ações */}
-        <div className="bg-muted/50 border-b">
+        <div className="bg-muted border-b">
           <div className="container px-4">
             <div className="flex items-center justify-between h-20">
               {/* Logo */}
@@ -218,7 +218,7 @@ export const Header = () => {
         </div>
 
         {/* Barra Principal - Cinza com Logo e Ações */}
-        <div className="bg-muted/50 border-b">
+        <div className="bg-muted border-b">
           <div className="container px-4">
             <div className="flex items-center justify-between h-16">
               {/* Logo Mobile */}
