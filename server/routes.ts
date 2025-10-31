@@ -176,6 +176,69 @@ export function registerRoutes(app: Express) {
     }
   });
 
+  // Bulk import products
+  app.post("/api/products/bulk-import", async (req, res) => {
+    try {
+      const { products } = req.body;
+      
+      if (!Array.isArray(products)) {
+        return res.status(400).json({ error: "Products must be an array" });
+      }
+
+      let imported = 0;
+      let updated = 0;
+      let errors = 0;
+      
+      console.log(`📦 Starting bulk import of ${products.length} products...`);
+
+      for (const productData of products) {
+        try {
+          // Verificar se produto existe pelo SKU
+          const existingProduct = await storage.getProductBySku(productData.sku);
+          
+          if (existingProduct) {
+            // Atualizar produto existente
+            await storage.updateProduct(existingProduct.id, {
+              name: productData.name,
+              description: productData.description,
+              packaging: productData.packaging,
+              categoryId: productData.categoryId,
+              featured: productData.featured,
+              status: productData.status,
+              images: productData.images,
+            });
+            updated++;
+          } else {
+            // Criar novo produto
+            await storage.createProduct(productData);
+            imported++;
+          }
+          
+          // Log a cada 50 produtos processados
+          if ((imported + updated) % 50 === 0) {
+            console.log(`   ✓ Processed ${imported + updated} products...`);
+          }
+        } catch (error) {
+          console.error(`Error importing product ${productData.sku}:`, error);
+          errors++;
+        }
+      }
+
+      console.log(`✨ Bulk import completed: ${imported} new, ${updated} updated, ${errors} errors`);
+
+      res.json({
+        success: true,
+        imported,
+        updated,
+        errors,
+        total: products.length
+      });
+    } catch (error) {
+      console.error("Error in bulk import:", error);
+      res.status(500).json({ error: "Failed to import products" });
+    }
+  });
+
   // ==========================================
   // ADMIN USERS ROUTES
   // ==========================================
