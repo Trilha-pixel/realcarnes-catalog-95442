@@ -55,19 +55,19 @@ export const ProductCard = ({ product }: ProductCardProps) => {
         </Link>
       </CardContent>
 
-      <CardFooter className="p-4 pt-0 flex gap-2">
-        <Button asChild variant="outline" className="flex-1" data-testid={`button-details-${product.id}`}>
+      <CardFooter className="p-4 pt-0 flex flex-col sm:flex-row gap-2">
+        <Button asChild variant="outline" className="w-full sm:flex-1" data-testid={`button-details-${product.id}`}>
           <Link to={`/produto/${product.id}`}>
             Ver Detalhes
           </Link>
         </Button>
         <Button 
           onClick={handleAddToCart}
-          className="flex-1 bg-primary hover:bg-primary-hover"
+          className="w-full sm:flex-1 bg-primary hover:bg-primary-hover"
           data-testid={`button-add-cart-${product.id}`}
         >
-          <ClipboardList className="h-4 w-4 mr-2" />
-          Adicionar à Cotação
+          <ClipboardList className="h-4 w-4 mr-1 flex-shrink-0" />
+          <span className="truncate">Adicionar à Cotação</span>
         </Button>
       </CardFooter>
     </Card>
