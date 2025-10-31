@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { useProducts, useCreateProduct, useUpdateProduct, useDeleteProduct } from '@/hooks/useProducts';
 import { useCategories } from '@/hooks/useCategories';
@@ -13,7 +13,9 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Edit, Trash2, Star, Loader2 } from 'lucide-react';
+import { Plus, Edit, Trash2, Star, Loader2, Upload, FileText } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { queryClient } from '@/lib/queryClient';
 
 const ProductManagement = () => {
   const { data: products = [], isLoading: isLoadingProducts } = useProducts();
@@ -26,6 +28,9 @@ const ProductManagement = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isImporting, setIsImporting] = useState(false);
+  const [importProgress, setImportProgress] = useState<{ current: number; total: number } | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   // Form state
   const [formData, setFormData] = useState({
@@ -146,6 +151,119 @@ const ProductManagement = () => {
     }
   };
 
+  const parseCSV = (text: string): any[] => {
+    const lines = text.split('\n');
+    const headers = lines[0].split(',').map(h => h.replace(/"/g, '').trim());
+    const data = [];
+    
+    for (let i = 1; i < lines.length; i++) {
+      if (!lines[i].trim()) continue;
+      
+      const values = [];
+      let current = '';
+      let inQuotes = false;
+      
+      for (let j = 0; j < lines[i].length; j++) {
+        const char = lines[i][j];
+        
+        if (char === '"' && lines[i][j-1] !== '"') {
+          inQuotes = !inQuotes;
+        } else if (char === ',' && !inQuotes) {
+          values.push(current.replace(/^"|"$/g, '').replace(/""/g, '"'));
+          current = '';
+        } else {
+          current += char;
+        }
+      }
+      
+      values.push(current.replace(/^"|"$/g, '').replace(/""/g, '"'));
+      
+      const row: any = {};
+      headers.forEach((header, index) => {
+        row[header] = values[index] || '';
+      });
+      
+      data.push(row);
+    }
+    
+    return data;
+  };
+
+  const handleCSVImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsImporting(true);
+    setImportProgress(null);
+
+    try {
+      const text = await file.text();
+      const csvData = parseCSV(text);
+      
+      setImportProgress({ current: 0, total: csvData.length });
+
+      // Preparar dados para importação
+      const productsToImport = csvData.map(row => ({
+        sku: row.sku || '',
+        name: row.name || '',
+        description: row.description || '',
+        packaging: row.packaging || '',
+        categoryId: parseInt(row.category_id) || 1,
+        featured: row.featured === 'true',
+        status: (row.status || 'active') as 'active' | 'inactive',
+        images: (() => {
+          try {
+            // Se o campo images já for um array JSON válido
+            if (row.images && row.images.startsWith('[')) {
+              return JSON.parse(row.images);
+            }
+            // Se for uma URL simples
+            return row.images ? [row.images] : [];
+          } catch {
+            return [];
+          }
+        })(),
+      }));
+
+      // Enviar para o servidor
+      const response = await fetch('/api/products/bulk-import', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ products: productsToImport }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erro ao importar produtos: ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      // Invalidar cache para recarregar produtos
+      await queryClient.invalidateQueries({ queryKey: ['/api/products'] });
+
+      toast({
+        title: 'Importação concluída!',
+        description: `${result.imported} produtos importados, ${result.updated} atualizados, ${result.errors} erros.`,
+      });
+
+      setImportProgress(null);
+    } catch (error) {
+      console.error('Erro ao importar CSV:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Erro na importação',
+        description: 'Não foi possível importar o arquivo CSV. Verifique o formato.',
+      });
+    } finally {
+      setIsImporting(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
   if (isLoadingProducts || isLoadingCategories) {
     return (
       <AdminLayout>
@@ -166,11 +284,48 @@ const ProductManagement = () => {
               Adicione, edite ou remova produtos do catálogo
             </p>
           </div>
-          <Button onClick={() => handleOpenDialog()} className="w-full sm:w-auto">
-            <Plus className="mr-2 h-4 w-4" />
-            Novo Produto
-          </Button>
+          <div className="flex gap-2 w-full sm:w-auto">
+            <Button onClick={() => handleOpenDialog()} className="flex-1 sm:flex-none">
+              <Plus className="mr-2 h-4 w-4" />
+              Novo Produto
+            </Button>
+            <Button 
+              onClick={() => fileInputRef.current?.click()} 
+              variant="outline"
+              disabled={isImporting}
+              className="flex-1 sm:flex-none"
+            >
+              {isImporting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Importando...
+                </>
+              ) : (
+                <>
+                  <Upload className="mr-2 h-4 w-4" />
+                  Importar CSV
+                </>
+              )}
+            </Button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".csv"
+              onChange={handleCSVImport}
+              className="hidden"
+              data-testid="csv-file-input"
+            />
+          </div>
         </div>
+
+        {importProgress && (
+          <Alert>
+            <FileText className="h-4 w-4" />
+            <AlertDescription>
+              Importando produtos: {importProgress.current} de {importProgress.total}
+            </AlertDescription>
+          </Alert>
+        )}
 
         <div className="flex items-center gap-4">
           <Input
