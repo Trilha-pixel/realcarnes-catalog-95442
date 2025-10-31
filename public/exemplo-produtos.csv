@@ -1,0 +1,11 @@
+id,sku,name,description,packaging,category_id,featured,status,images,created_at,updated_at
+1,CSV-001,Picanha Argentina Premium,Corte nobre importado da Argentina com marmoreio excepcional. Ideal para churrascos especiais.,Caixa com 15kg,1,true,active,"[""https://placehold.co/800x600/1E3A5F/white?text=Picanha+Argentina""]",2025-10-31,2025-10-31
+2,CSV-002,File Mignon Angus,File mignon de gado Angus certificado. Maciez incomparável.,Caixa com 10kg,1,true,active,"[""https://placehold.co/800x600/1E3A5F/white?text=File+Mignon""]",2025-10-31,2025-10-31
+3,CSV-003,Peito de Frango Temperado,Peito de frango já temperado com ervas finas. Pronto para assar.,Bandeja com 2kg,3,false,active,"[""https://placehold.co/800x600/1E3A5F/white?text=Peito+Temperado""]",2025-10-31,2025-10-31
+4,CSV-004,Costela Suína BBQ,Costela suína pré-cozida com molho barbecue. Finalizar na churrasqueira.,Embalagem a vácuo 3kg,2,true,active,"[""https://placehold.co/800x600/1E3A5F/white?text=Costela+BBQ""]",2025-10-31,2025-10-31
+5,CSV-005,Linguiça Toscana Artesanal,Linguiça toscana produzida artesanalmente com temperos selecionados.,Pacote com 1kg,2,false,active,"[""https://placehold.co/800x600/1E3A5F/white?text=Linguica+Toscana""]",2025-10-31,2025-10-31
+6,CSV-006,Salmão Norueguês,Salmão premium importado da Noruega. Rico em ômega 3.,Bandeja com 500g,4,true,active,"[""https://placehold.co/800x600/1E3A5F/white?text=Salmao+Noruegues""]",2025-10-31,2025-10-31
+7,CSV-007,Camarão Gigante,Camarão gigante limpo e descascado. Ideal para pratos sofisticados.,Caixa com 2kg,4,false,active,"[""https://placehold.co/800x600/1E3A5F/white?text=Camarao+Gigante""]",2025-10-31,2025-10-31
+8,CSV-008,Hambúrguer Gourmet,Hambúrguer blend de carnes nobres. 180g por unidade.,Caixa com 20 unidades,5,true,active,"[""https://placehold.co/800x600/1E3A5F/white?text=Hamburguer+Gourmet""]",2025-10-31,2025-10-31
+9,CSV-009,Bacon Defumado Premium,Bacon artesanalmente defumado. Fatias grossas.,Pacote com 500g,6,false,active,"[""https://placehold.co/800x600/1E3A5F/white?text=Bacon+Premium""]",2025-10-31,2025-10-31
+10,CSV-010,Mix de Cortes Nobres,Seleção especial de cortes nobres bovinos para churrasco completo.,Kit com 5kg,6,true,active,"[""https://placehold.co/800x600/1E3A5F/white?text=Mix+Cortes""]",2025-10-31,2025-10-31
