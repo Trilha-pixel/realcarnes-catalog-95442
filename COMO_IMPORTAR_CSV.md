@@ -82,6 +82,7 @@ Você pode baixá-lo em:
 - **Endpoint**: `POST /api/products/bulk-import`
 - **Arquivo**: `server/routes.ts`
 - **Lógica**: Upsert (cria ou atualiza) baseado no SKU
+- **Limite**: Aceita até 50MB de dados (suficiente para milhares de produtos)
 
 ## 📊 Exemplo de CSV Válido
 
