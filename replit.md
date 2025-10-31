@@ -21,6 +21,7 @@ Preferred communication style: Simple, everyday language.
   - Desktop: Buttons side-by-side (flex-row)
   - Height adjusts automatically (h-auto) to accommodate text
   - Icon with flex-shrink-0 prevents compression
+- ✅ Reduced header logo size by 10% (from 56px to 50px height) for better visual balance
 
 ## System Architecture
 
