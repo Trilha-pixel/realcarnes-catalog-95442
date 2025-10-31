@@ -99,7 +99,7 @@ export const Header = () => {
                 <img 
                   src={logoRoyalAlimentos} 
                   alt="Royal Alimentos" 
-                  className="h-14 w-auto object-contain"
+                  className="h-[50px] w-auto object-contain"
                 />
               </Link>
 
@@ -226,7 +226,7 @@ export const Header = () => {
                 <img 
                   src={logoRoyalAlimentos} 
                   alt="Royal Alimentos" 
-                  className="h-14 w-auto object-contain"
+                  className="h-[50px] w-auto object-contain"
                 />
               </Link>
 
@@ -287,7 +287,7 @@ export const Header = () => {
                 <img 
                   src={logoRoyalAlimentos} 
                   alt="Royal Alimentos" 
-                  className="h-14 w-auto object-contain"
+                  className="h-[50px] w-auto object-contain"
                 />
                 <Button
                   variant="ghost"
