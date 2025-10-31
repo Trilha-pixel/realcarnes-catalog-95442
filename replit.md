@@ -14,11 +14,12 @@ Preferred communication style: Simple, everyday language.
 
 **October 31, 2024**
 - ✅ Fixed 413 Payload Too Large error by increasing Express body parser limit to 50MB (CSV bulk import support)
-- ✅ Fixed ProductCard button overflow issue - Simplified button text to prevent cutoff
-  - Changed button text from "Adicionar à Cotação" to "Adicionar" (shorter and clearer)
+- ✅ Fixed ProductCard button overflow issue - Complete text with smaller font and line breaks
+  - Button displays full text "Adicionar à Cotação" with smaller font (text-xs)
+  - Text wraps to multiple lines if needed (leading-tight for compact spacing)
   - Mobile: Buttons stacked vertically (flex-col)
   - Desktop: Buttons side-by-side (flex-row)
-  - Added whitespace-nowrap to prevent text wrapping
+  - Height adjusts automatically (h-auto) to accommodate text
   - Icon with flex-shrink-0 prevents compression
 
 ## System Architecture
