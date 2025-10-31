@@ -10,6 +10,16 @@ Built with React, TypeScript, and Vite, the application features a public-facing
 
 Preferred communication style: Simple, everyday language.
 
+## Recent Changes
+
+**October 31, 2024**
+- ✅ Fixed 413 Payload Too Large error by increasing Express body parser limit to 50MB (CSV bulk import support)
+- ✅ Fixed ProductCard button overflow issue - "Adicionar à Cotação" button now responsive with proper layout
+  - Mobile: Buttons stacked vertically (flex-col)
+  - Desktop: Buttons side-by-side (flex-row)
+  - Text truncation prevents overflow
+  - Icon with flex-shrink-0 prevents compression
+
 ## System Architecture
 
 ### Frontend Architecture
